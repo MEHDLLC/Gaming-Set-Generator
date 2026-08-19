@@ -136,6 +136,53 @@ def seeded_styles(kit_id, seed):
     return {slot: pick(slot) for slot in STYLE_POOLS}
 
 
+BASE_TAGS = ["dungeon terrain", "castle terrain", "tabletop terrain",
+             "dnd terrain", "modular dungeon", "28mm terrain",
+             "3d printed terrain", "rpg dungeon tiles"]
+
+STYLE_TAGS = {
+    "door_arch": ["castle door", "arched door"],
+    "door_rect": ["castle door", "dungeon door"],
+    "door_portcullis": ["portcullis", "castle gate"],
+    "window_slit": ["arrow slit", "castle window"],
+    "window_arch": ["castle window"],
+    "window_barred": ["castle window", "prison window"],
+    "sconce": ["torch sconce"],
+    "banner_peg": ["castle banner"],
+    "gargoyle_socket": ["gargoyle"],
+    "compass": ["compass rose"],
+    "shield": ["heraldry"],
+    "knotwork": ["celtic knot"],
+    "blank": ["paintable tile"],
+}
+
+
+def suggest_tags(piece, params):
+    """Etsy-style tag list: max 13 tags, each 20 characters or less."""
+    tags = list(BASE_TAGS)
+    scad = piece["scad"]
+    if "floor_tile" in scad:
+        tags += ["dungeon floor tile", "dnd tiles"]
+    elif "mosaic" in scad:
+        tags += ["dungeon floor tile", "mosaic tile"]
+    elif "wall_corner" in scad:
+        tags += ["dungeon wall", "corner wall"]
+    elif "wall_straight" in scad:
+        tags += ["dungeon wall"]
+    elif "fit_coupon" in scad:
+        tags += ["calibration", "test print"]
+    for key in ("OPENING", "DECOR", "MOSAIC"):
+        tags += STYLE_TAGS.get(params.get(key, ""), [])
+    if params.get("CONNECTOR") == "magnet":
+        tags.append("magnetic terrain")
+    seen, out = set(), []
+    for tag in tags:
+        if tag not in seen and len(tag) <= 20:
+            seen.add(tag)
+            out.append(tag)
+    return out[:13]
+
+
 def connector_text(shared):
     c = shared.get("CONNECTOR", "tab")
     if c == "magnet":
@@ -256,6 +303,14 @@ def build_kit(kit, failures):
         }
         (kit_dir / f"{name}.txt").write_text(
             DESCRIPTION_TEMPLATE.format(**fields))
+        nice = re.sub(r"(\d)X(\d)", r"\1x\2",
+                      fields["piece_type"].title())
+        title = (f"{nice} - {kit['kit_name']} | "
+                 f"Modular Dungeon Terrain STL")
+        (kit_dir / f"{name}.tags.txt").write_text(
+            f"Suggested listing title:\n{title}\n\n"
+            "Suggested tags (13 max, 20 characters each):\n"
+            + "\n".join(suggest_tags(piece, params)) + "\n")
         print(f"[ok]     {kit_id}/{name}")
 
     if manifest_rows:
@@ -347,7 +402,8 @@ def main():
     for kit_dir in sorted(d for d in OUT.iterdir()
                           if d.is_dir() and d.name != ".fit"):
         stls = {f.stem for f in kit_dir.glob("*.stl")}
-        txts = {f.stem for f in kit_dir.glob("*.txt")}
+        txts = {f.name[:-4] for f in kit_dir.glob("*.txt")
+                if not f.name.endswith(".tags.txt")}
         if stls != txts:
             failures.append(
                 f"{kit_dir.name}: stl/txt mismatch — "

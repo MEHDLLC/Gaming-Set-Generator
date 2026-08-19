@@ -58,6 +58,12 @@ Current kits: `stonebound_keep` (tab & slot, seed 42),
 `lodestone_vault` (5x2mm magnets, seed 7), plus the `calibration`
 coupon set.
 
+Every piece ships with three files: `<name>.stl`, `<name>.txt`
+(the four-section listing description), and `<name>.tags.txt` (a
+suggested listing title plus up to 13 marketplace tags, each within
+Etsy's 20-character limit, derived from the piece's actual style,
+connector, and kit).
+
 Each kit folder also carries a `manifest.csv` (per-piece bounding
 box, solid volume/weight, triangle count, magnets needed, plus kit
 totals — including the magnet shopping list), and every non-coupon
