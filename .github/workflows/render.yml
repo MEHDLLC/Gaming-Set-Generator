@@ -2,15 +2,24 @@ name: Render STLs
 
 on:
   push:
+    # branches must be listed explicitly: defining only `tags` would
+    # stop branch pushes from triggering at all.
+    branches:
+      - "**"
+    tags:
+      - "v*"
     paths:
       - "src/**"
       - "config/**"
       - "scripts/**"
       - "tests/**"
       - ".github/workflows/render.yml"
-    tags:
-      - "v*"
   workflow_dispatch:
+
+# A new push supersedes any in-flight render of the same ref.
+concurrency:
+  group: render-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: write
@@ -18,11 +27,12 @@ permissions:
 jobs:
   render:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
       - name: Install OpenSCAD and xvfb
-        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends openscad xvfb
+        run: sudo DEBIAN_FRONTEND=noninteractive apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends openscad xvfb
 
       - name: Render, validate, and describe all kits
         run: python3 scripts/build.py
