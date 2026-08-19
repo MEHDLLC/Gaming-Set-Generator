@@ -17,13 +17,28 @@ and shipped as a matching `.stl` + `.txt` description pair.
   dowel pins (1.75mm filament offcuts), or flush butt-joint — shared
   library in `src/lib/connectors.scad` so every piece in a kit mates.
 
+## Piece library (Phase 1)
+
+| Piece | Variants |
+|---|---|
+| `fit_coupon` | one mating test pair per connector type — print first to dial in fit |
+| `floor_tile` | any W x L grid footprint |
+| `wall_straight` | any length in grid units, 2-unit height |
+| `wall_corner` | 90°, right/left-handed (tab chains are chiral) |
+
+Floors fill grid cells; walls run along grid lines, centered on them.
+Tab gender convention: floors are male on +X/+Y edges, female on
+-X/-Y; wall chains alternate male-into-female, and corners pass the
+chain through (male out one arm, female in the other).
+
 ## Layout
 
 ```
-src/lib/        shared OpenSCAD libraries (grid, connectors)
-src/pieces/     one .scad per piece type
-config/         build manifest: which pieces + parameter sets to render
+src/lib/        shared OpenSCAD libraries (grid, connectors, pieces)
+src/pieces/     one entry .scad per piece type
+config/         build manifest: pieces, parameter sets, fit tests
 scripts/        build.py — render, validate mesh, emit descriptions
+tests/          fit_test.scad — boolean-intersection snap-fit checks
 generated/      output .stl + .txt (rebuilt by CI)
 ```
 
@@ -35,8 +50,10 @@ python3 scripts/build.py
 ```
 
 Renders every piece in `config/build_manifest.json` into `generated/`,
-runs mesh QA (non-empty, no degenerate faces, manifold), and writes a
-matching `.txt` description per STL. Fails loudly if any piece breaks.
+runs mesh QA (non-empty, no degenerate faces, manifold), writes a
+matching `.txt` description per STL, then runs the snap-fit tests:
+each mated piece pair is boolean-intersected and must produce zero
+overlap volume. Fails loudly if any piece breaks.
 
 ## CI
 

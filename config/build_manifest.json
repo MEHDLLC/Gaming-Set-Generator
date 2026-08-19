@@ -1,5 +1,5 @@
 {
-  "kit_name": "Foundation Calibration Set",
+  "kit_name": "Stonebound Keep",
   "defaults": {
     "nozzle_size": "0.4mm"
   },
@@ -7,7 +7,10 @@
     {
       "name": "fit_coupon_tab",
       "scad": "src/pieces/fit_coupon.scad",
-      "params": { "CONNECTOR": "tab", "FIT": "normal" },
+      "params": {
+        "CONNECTOR": "tab",
+        "FIT": "normal"
+      },
       "description": {
         "piece_type": "fit-test coupon",
         "style": "calibration",
@@ -18,7 +21,11 @@
     {
       "name": "fit_coupon_magnet_5x2",
       "scad": "src/pieces/fit_coupon.scad",
-      "params": { "CONNECTOR": "magnet", "MAGNET": "5x2", "FIT": "normal" },
+      "params": {
+        "CONNECTOR": "magnet",
+        "MAGNET": "5x2",
+        "FIT": "normal"
+      },
       "description": {
         "piece_type": "fit-test coupon",
         "style": "calibration",
@@ -29,7 +36,10 @@
     {
       "name": "fit_coupon_dowel",
       "scad": "src/pieces/fit_coupon.scad",
-      "params": { "CONNECTOR": "dowel", "FIT": "normal" },
+      "params": {
+        "CONNECTOR": "dowel",
+        "FIT": "normal"
+      },
       "description": {
         "piece_type": "fit-test coupon",
         "style": "calibration",
@@ -40,12 +50,193 @@
     {
       "name": "fit_coupon_butt",
       "scad": "src/pieces/fit_coupon.scad",
-      "params": { "CONNECTOR": "none", "FIT": "normal" },
+      "params": {
+        "CONNECTOR": "none",
+        "FIT": "normal"
+      },
       "description": {
         "piece_type": "fit-test coupon",
         "style": "calibration",
         "connector_type": "flush butt-joint",
         "param_summary": "GRID_UNIT 25.4mm, no connector"
+      }
+    },
+    {
+      "name": "floor_tile_1x1_tab",
+      "scad": "src/pieces/floor_tile.scad",
+      "params": {
+        "CONNECTOR": "tab",
+        "FIT": "normal",
+        "FLOOR_W": 1,
+        "FLOOR_L": 1
+      },
+      "description": {
+        "piece_type": "floor tile (1x1)",
+        "style": "plain flat",
+        "connector_type": "tab & slot",
+        "param_summary": "GRID_UNIT 25.4mm, 1x1 squares, FIT normal"
+      }
+    },
+    {
+      "name": "floor_tile_2x2_tab",
+      "scad": "src/pieces/floor_tile.scad",
+      "params": {
+        "CONNECTOR": "tab",
+        "FIT": "normal",
+        "FLOOR_W": 2,
+        "FLOOR_L": 2
+      },
+      "description": {
+        "piece_type": "floor tile (2x2)",
+        "style": "plain flat",
+        "connector_type": "tab & slot",
+        "param_summary": "GRID_UNIT 25.4mm, 2x2 squares, FIT normal"
+      }
+    },
+    {
+      "name": "floor_tile_1x1_magnet_5x2",
+      "scad": "src/pieces/floor_tile.scad",
+      "params": {
+        "CONNECTOR": "magnet",
+        "MAGNET": "5x2",
+        "FIT": "normal",
+        "FLOOR_W": 1,
+        "FLOOR_L": 1
+      },
+      "description": {
+        "piece_type": "floor tile (1x1)",
+        "style": "plain flat",
+        "connector_type": "5x2mm magnet pocket",
+        "param_summary": "GRID_UNIT 25.4mm, 1x1 squares, 5x2mm magnets"
+      }
+    },
+    {
+      "name": "wall_1u_tab",
+      "scad": "src/pieces/wall_straight.scad",
+      "params": {
+        "CONNECTOR": "tab",
+        "FIT": "normal",
+        "WALL_UNITS": 1
+      },
+      "description": {
+        "piece_type": "straight wall (1 unit)",
+        "style": "plain",
+        "connector_type": "vertical dovetail tab & slot",
+        "param_summary": "GRID_UNIT 25.4mm, 2-unit height, FIT normal"
+      }
+    },
+    {
+      "name": "wall_2u_tab",
+      "scad": "src/pieces/wall_straight.scad",
+      "params": {
+        "CONNECTOR": "tab",
+        "FIT": "normal",
+        "WALL_UNITS": 2
+      },
+      "description": {
+        "piece_type": "straight wall (2 units)",
+        "style": "plain",
+        "connector_type": "vertical dovetail tab & slot",
+        "param_summary": "GRID_UNIT 25.4mm, 2-unit height, FIT normal"
+      }
+    },
+    {
+      "name": "wall_1u_magnet_5x2",
+      "scad": "src/pieces/wall_straight.scad",
+      "params": {
+        "CONNECTOR": "magnet",
+        "MAGNET": "5x2",
+        "FIT": "normal",
+        "WALL_UNITS": 1
+      },
+      "description": {
+        "piece_type": "straight wall (1 unit)",
+        "style": "plain",
+        "connector_type": "5x2mm magnet pocket",
+        "param_summary": "GRID_UNIT 25.4mm, 2-unit height, 5x2mm magnets"
+      }
+    },
+    {
+      "name": "wall_corner_tab",
+      "scad": "src/pieces/wall_corner.scad",
+      "params": {
+        "CONNECTOR": "tab",
+        "FIT": "normal",
+        "CORNER_MIRRORED": false
+      },
+      "description": {
+        "piece_type": "90-degree corner wall",
+        "style": "plain",
+        "connector_type": "vertical dovetail tab & slot",
+        "param_summary": "GRID_UNIT 25.4mm, 2-unit height, FIT normal, right-handed"
+      }
+    },
+    {
+      "name": "wall_corner_tab_mirrored",
+      "scad": "src/pieces/wall_corner.scad",
+      "params": {
+        "CONNECTOR": "tab",
+        "FIT": "normal",
+        "CORNER_MIRRORED": true
+      },
+      "description": {
+        "piece_type": "90-degree corner wall",
+        "style": "plain",
+        "connector_type": "vertical dovetail tab & slot",
+        "param_summary": "GRID_UNIT 25.4mm, 2-unit height, FIT normal, left-handed"
+      }
+    },
+    {
+      "name": "wall_corner_magnet_5x2",
+      "scad": "src/pieces/wall_corner.scad",
+      "params": {
+        "CONNECTOR": "magnet",
+        "MAGNET": "5x2",
+        "FIT": "normal",
+        "CORNER_MIRRORED": false
+      },
+      "description": {
+        "piece_type": "90-degree corner wall",
+        "style": "plain",
+        "connector_type": "5x2mm magnet pocket",
+        "param_summary": "GRID_UNIT 25.4mm, 2-unit height, 5x2mm magnets"
+      }
+    }
+  ],
+  "fit_tests": [
+    {
+      "name": "floor_floor_x",
+      "params": {
+        "TEST": "floor_x",
+        "CONNECTOR": "tab"
+      }
+    },
+    {
+      "name": "floor_floor_y",
+      "params": {
+        "TEST": "floor_y",
+        "CONNECTOR": "tab"
+      }
+    },
+    {
+      "name": "wall_wall",
+      "params": {
+        "TEST": "wall_wall",
+        "CONNECTOR": "tab"
+      }
+    },
+    {
+      "name": "corner_to_wall_male",
+      "params": {
+        "TEST": "corner_male",
+        "CONNECTOR": "tab"
+      }
+    },
+    {
+      "name": "corner_to_wall_female",
+      "params": {
+        "TEST": "corner_female",
+        "CONNECTOR": "tab"
       }
     }
   ]

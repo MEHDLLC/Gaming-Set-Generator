@@ -5,9 +5,6 @@
 include <../lib/grid.scad>
 include <../lib/connectors.scad>
 
-// "tab" | "magnet" | "dowel" | "none"
-CONNECTOR = "tab";
-
 // Gap between the two plates on the print bed.
 COUPON_GAP = 5;
 

@@ -85,6 +85,35 @@ def validate_stl(path):
     return None
 
 
+def run_fit_tests(manifest, failures):
+    """Render mated piece pairs' boolean intersection; any volume = collision."""
+    scratch = ROOT / "generated" / ".fit"
+    scratch.mkdir(parents=True, exist_ok=True)
+    for test in manifest.get("fit_tests", []):
+        name = test["name"]
+        stl = scratch / f"{name}.stl"
+        stl.unlink(missing_ok=True)
+        cmd = ["openscad", "-o", str(stl)]
+        for k, v in test.get("params", {}).items():
+            cmd += ["-D", f"{k}={scad_value(v)}"]
+        cmd.append(str(ROOT / "tests" / "fit_test.scad"))
+        proc = subprocess.run(cmd, capture_output=True, text=True)
+        out = proc.stderr + proc.stdout
+        if "top level object is empty" in out:
+            print(f"[fit ok] {name}: no overlap")
+            continue
+        if proc.returncode != 0 or not stl.exists():
+            failures.append(f"fit test {name}: render failed\n{proc.stderr}")
+            continue
+        tris = load_stl_triangles(stl)
+        if tris:
+            failures.append(
+                f"fit test {name}: pieces OVERLAP ({len(tris)} intersection "
+                f"triangles) — connector geometry is wrong")
+        else:
+            print(f"[fit ok] {name}: no overlap")
+
+
 def main():
     manifest = json.loads((ROOT / "config" / "build_manifest.json").read_text())
     OUT.mkdir(exist_ok=True)
@@ -115,12 +144,15 @@ def main():
         (OUT / f"{name}.txt").write_text(DESCRIPTION_TEMPLATE.format(**fields))
         print(f"[ok]     {name}.stl + {name}.txt")
 
+    run_fit_tests(manifest, failures)
+
     if failures:
         print("\nBUILD FAILED:", file=sys.stderr)
         for f in failures:
             print(f"  - {f}", file=sys.stderr)
         sys.exit(1)
-    print(f"\nAll {len(manifest['pieces'])} pieces rendered and validated.")
+    print(f"\nAll {len(manifest['pieces'])} pieces rendered and validated; "
+          f"{len(manifest.get('fit_tests', []))} fit tests passed.")
 
 
 if __name__ == "__main__":

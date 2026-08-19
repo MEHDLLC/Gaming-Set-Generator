@@ -8,7 +8,14 @@
 //
 // All fit-critical dimensions here are ABSOLUTE (see grid.scad).
 
-// Tab & slot (puzzle-style dovetail, full piece thickness).
+// Connector type used by all pieces: "tab" | "magnet" | "dowel" | "none".
+// Tab & slot is gendered (a piece has male and female edges); magnet,
+// dowel, and none are genderless, so tiles can be rotated freely.
+CONNECTOR = "tab";
+
+// Tab & slot (puzzle-style dovetail, full piece thickness). Defaults
+// suit flat tiles; walls pass smaller dims that fit inside their
+// thickness (see pieces.scad).
 TAB_NECK  = 6;    // width at the edge face
 TAB_HEAD  = 10;   // width at the tip
 TAB_DEPTH = 6;    // how far the tab projects
@@ -25,27 +32,32 @@ function magnet_h(m = MAGNET) =
     m == "8x3" ? 3 : 2;
 
 // Dovetail profile, projecting toward +X. grow > 0 loosens the female.
-module tab_profile(grow = 0) {
+module tab_profile(grow = 0, neck = TAB_NECK, head = TAB_HEAD,
+                   depth = TAB_DEPTH) {
     polygon([
-        [-EPS,             -(TAB_NECK / 2 + grow)],
-        [TAB_DEPTH + grow, -(TAB_HEAD / 2 + grow)],
-        [TAB_DEPTH + grow,   TAB_HEAD / 2 + grow],
-        [-EPS,               TAB_NECK / 2 + grow]
+        [-EPS,         -(neck / 2 + grow)],
+        [depth + grow, -(head / 2 + grow)],
+        [depth + grow,   head / 2 + grow],
+        [-EPS,           neck / 2 + grow]
     ]);
 }
 
-// Male tab: union onto a piece whose edge face is at x = 0.
-module tab_male(thickness) {
-    linear_extrude(height = thickness) tab_profile(0);
+// Male tab: union onto a piece whose edge face is at x = 0, material
+// on -X. The tab projects +X into the neighboring piece's slot.
+module tab_male(thickness, neck = TAB_NECK, head = TAB_HEAD,
+                depth = TAB_DEPTH) {
+    linear_extrude(height = thickness)
+        tab_profile(0, neck, head, depth);
 }
 
 // Female slot: subtract from a piece whose edge face is at x = 0,
-// material on +X. Mirrored so the slot opens toward -X... the mating
-// piece slides in from outside the edge.
-module tab_female(thickness, clearance = fit_clearance()) {
+// material on +X. The cut extends +X into the material, opening at the
+// edge face so the mating tab enters from -X.
+module tab_female(thickness, clearance = fit_clearance(),
+                  neck = TAB_NECK, head = TAB_HEAD, depth = TAB_DEPTH) {
     translate([0, 0, -EPS])
         linear_extrude(height = thickness + 2 * EPS)
-            mirror([1, 0, 0]) tab_profile(clearance);
+            tab_profile(clearance, neck, head, depth);
 }
 
 // Cylindrical pocket bored into an edge face at x = 0, material on +X,
