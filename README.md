@@ -22,11 +22,18 @@ and shipped as a matching `.stl` + `.txt` description pair.
 | Piece | Variants |
 |---|---|
 | `fit_coupon` | one mating test pair per connector type — print first to dial in fit |
-| `floor_tile` | any W x L grid footprint |
-| `wall_straight` | any length in grid units, 2-unit height |
+| `floor_tile` | any W x L grid footprint; wall-foot grooves on edges and interior grid lines |
+| `wall_straight` | any length; heights: parapet (1u) / standard (2u) / tower (3u); openings below |
 | `wall_corner` | 90°, right/left-handed (tab chains are chiral) |
 
+Wall openings (`OPENING` parameter): `door_arch`, `door_rect`,
+`door_portcullis` (2-unit walls), `window_slit` (splayed embrasure),
+`window_arch`, `window_barred` (1-unit walls). Cutout sizes, arch
+rise, sill heights, and bar pitch are all parameters.
+
 Floors fill grid cells; walls run along grid lines, centered on them.
+Walls carry a tenon rail underfoot that drops into the floor groove
+channel, registering wall lines to the grid (print walls lying flat).
 Tab gender convention: floors are male on +X/+Y edges, female on
 -X/-Y; wall chains alternate male-into-female, and corners pass the
 chain through (male out one arm, female in the other).

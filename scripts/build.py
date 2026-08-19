@@ -44,7 +44,7 @@ def scad_value(v):
 
 
 def load_stl_triangles(path):
-    """Return a list of triangles, each a tuple of 3 hashable vertex keys.
+    """Return a list of triangles as ((x,y,z), (x,y,z), (x,y,z)) floats.
 
     Handles both binary and ASCII STL.
     """
@@ -55,16 +55,24 @@ def load_stl_triangles(path):
             tris = []
             for i in range(count):
                 off = 84 + 50 * i + 12  # skip normal
-                tris.append(tuple(data[off + 12 * j: off + 12 * (j + 1)]
-                                  for j in range(3)))
+                tris.append(tuple(
+                    struct.unpack_from("<fff", data, off + 12 * j)
+                    for j in range(3)))
             return tris
     # ASCII fallback
     verts = re.findall(rb"vertex\s+(\S+)\s+(\S+)\s+(\S+)", data)
-    tris = []
-    for i in range(0, len(verts) - 2, 3):
-        tris.append(tuple(
-            tuple(f"{float(c):.5f}" for c in verts[i + j]) for j in range(3)))
-    return tris
+    return [tuple(tuple(float(c) for c in verts[i + j]) for j in range(3))
+            for i in range(0, len(verts) - 2, 3)]
+
+
+def mesh_volume(tris):
+    """Signed mesh volume via the divergence theorem (mm^3)."""
+    vol = 0.0
+    for (a, b, c) in tris:
+        vol += (a[0] * (b[1] * c[2] - b[2] * c[1])
+                - a[1] * (b[0] * c[2] - b[2] * c[0])
+                + a[2] * (b[0] * c[1] - b[1] * c[0]))
+    return vol / 6.0
 
 
 def validate_stl(path):
@@ -106,12 +114,16 @@ def run_fit_tests(manifest, failures):
             failures.append(f"fit test {name}: render failed\n{proc.stderr}")
             continue
         tris = load_stl_triangles(stl)
-        if tris:
+        vol = abs(mesh_volume(tris))
+        # Coplanar face contact (a piece resting on another) yields
+        # degenerate zero-volume triangles; only real volume fails.
+        if vol > 0.01:
             failures.append(
-                f"fit test {name}: pieces OVERLAP ({len(tris)} intersection "
-                f"triangles) — connector geometry is wrong")
+                f"fit test {name}: pieces OVERLAP by {vol:.2f} mm^3 "
+                f"— connector geometry is wrong")
         else:
-            print(f"[fit ok] {name}: no overlap")
+            print(f"[fit ok] {name}: no overlap"
+                  + (" (surface contact only)" if tris else ""))
 
 
 def main():
