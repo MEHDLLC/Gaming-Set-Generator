@@ -69,7 +69,9 @@ jobs:
           git add generated/
           if ! git diff --cached --quiet; then
             git commit -m "CI: regenerate STL + txt outputs [skip ci]"
-            git push
+            # If the branch advanced while we rendered, skip: the newer
+            # push triggers its own render of the newer sources.
+            git push || echo "branch advanced; skipping commit-back"
           fi
 
       - name: Publish release with kit bundles (tags only)
