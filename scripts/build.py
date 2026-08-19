@@ -109,21 +109,22 @@ def mesh_volume(tris):
 
 
 def validate_stl(path):
-    """Basic mesh QA: non-empty, no degenerate faces, manifold edges."""
+    """Basic mesh QA. Returns (error, triangles)."""
     tris = load_stl_triangles(path)
     if not tris:
-        return "no triangles in mesh"
+        return "no triangles in mesh", tris
     edge_count = {}
     for tri in tris:
         if len(set(tri)) < 3:
-            return "degenerate triangle (repeated vertex)"
+            return "degenerate triangle (repeated vertex)", tris
         for a, b in ((0, 1), (1, 2), (2, 0)):
             key = frozenset((tri[a], tri[b]))
             edge_count[key] = edge_count.get(key, 0) + 1
+    
     bad = sum(1 for n in edge_count.values() if n != 2)
     if bad:
-        return f"non-manifold: {bad} edges not shared by exactly 2 faces"
-    return None
+        return f"non-manifold: {bad} edges not shared by exactly 2 faces", tris
+    return None, tris
 
 
 def seeded_styles(kit_id, seed):
@@ -161,6 +162,27 @@ def render_scad(out_path, scad_path, params, png_camera=None):
     return subprocess.run(cmd, capture_output=True, text=True)
 
 
+def kit_code(kit):
+    initials = "".join(w[0] for w in kit["kit_id"].split("_")).upper()
+    return kit.get("code", f"{initials}{kit.get('seed', 0)}")
+
+
+def magnet_count(piece, params):
+    """Pockets a piece needs filled, for the kit shopping list."""
+    if params.get("CONNECTOR") != "magnet":
+        return 0
+    scad = piece["scad"]
+    if "floor_tile" in scad or "mosaic" in scad:
+        return 2 * (params.get("FLOOR_W", 1) + params.get("FLOOR_L", 1))
+    if "wall_straight" in scad:
+        return 2 * (2 if params.get("WALL_HEIGHT_UNITS", 2) > 1 else 1)
+    if "wall_corner" in scad:
+        return 2 * (2 if params.get("WALL_HEIGHT_UNITS", 2) > 1 else 1)
+    if "fit_coupon" in scad:
+        return 2
+    return 0
+
+
 def build_kit(kit, failures):
     kit_id = kit["kit_id"]
     shared = kit.get("shared", {})
@@ -171,6 +193,7 @@ def build_kit(kit, failures):
         styles.update(kit.get("styles", {}))
     kit_dir = OUT / kit_id
     kit_dir.mkdir(parents=True, exist_ok=True)
+    manifest_rows = []
     print(f"== kit {kit_id}"
           + (f" (seed {kit.get('seed', 0)}: "
              + ", ".join(f"{k}={v}" for k, v in sorted(styles.items()))
@@ -187,16 +210,32 @@ def build_kit(kit, failures):
                                 f"kit-level params {sorted(clash)}")
                 continue
         params = {**shared, **own}
+        if not calibration:
+            params["PART_ID"] = f"{kit_code(kit)} {name}"
 
         stl = kit_dir / f"{name}.stl"
         proc = render_scad(stl, ROOT / piece["scad"], params)
         if proc.returncode != 0 or not stl.exists():
             failures.append(f"{kit_id}/{name}: render failed\n{proc.stderr}")
             continue
-        err = validate_stl(stl)
+        err, tris = validate_stl(stl)
         if err:
             failures.append(f"{kit_id}/{name}: {err}")
             continue
+        xs = [v[0] for tri in tris for v in tri]
+        ys = [v[1] for tri in tris for v in tri]
+        zs = [v[2] for tri in tris for v in tri]
+        vol_cm3 = abs(mesh_volume(tris)) / 1000
+        manifest_rows.append({
+            "name": name, "piece_type": piece["piece_type"],
+            "file": f"{name}.stl", "triangles": len(tris),
+            "bbox_x_mm": round(max(xs) - min(xs), 2),
+            "bbox_y_mm": round(max(ys) - min(ys), 2),
+            "bbox_z_mm": round(max(zs) - min(zs), 2),
+            "solid_volume_cm3": round(vol_cm3, 2),
+            "solid_pla_g": round(vol_cm3 * 1.24, 1),
+            "magnets_needed": magnet_count(piece, params),
+        })
 
         summary = (f"GRID_UNIT {shared.get('GRID_UNIT', 25.4)}mm, "
                    f"FIT {shared.get('FIT', 'normal')}")
@@ -218,6 +257,19 @@ def build_kit(kit, failures):
         (kit_dir / f"{name}.txt").write_text(
             DESCRIPTION_TEMPLATE.format(**fields))
         print(f"[ok]     {kit_id}/{name}")
+
+    if manifest_rows:
+        import csv
+        with (kit_dir / "manifest.csv").open("w", newline="") as f:
+            wr = csv.DictWriter(f, fieldnames=list(manifest_rows[0]))
+            wr.writeheader()
+            wr.writerows(manifest_rows)
+            total_mag = sum(r["magnets_needed"] for r in manifest_rows)
+            f.write(f"# kit totals: {len(manifest_rows)} pieces, "
+                    f"{sum(r['solid_pla_g'] for r in manifest_rows):.0f}g "
+                    f"solid PLA, {total_mag} magnets"
+                    + (f" ({kit.get('shared', {}).get('MAGNET', '')}mm)"
+                       if total_mag else "") + "\n")
 
     if kit.get("preview") and not calibration:
         render_previews(kit, styles, kit_dir, failures)
@@ -289,6 +341,18 @@ def main():
         n_pieces += len(kit["pieces"])
         build_kit(kit, failures)
     n_tests = run_fit_tests(failures)
+
+    # Every .stl must have a matching .txt and vice versa — the
+    # zero-mismatch guarantee for shipped bundles.
+    for kit_dir in sorted(d for d in OUT.iterdir()
+                          if d.is_dir() and d.name != ".fit"):
+        stls = {f.stem for f in kit_dir.glob("*.stl")}
+        txts = {f.stem for f in kit_dir.glob("*.txt")}
+        if stls != txts:
+            failures.append(
+                f"{kit_dir.name}: stl/txt mismatch — "
+                f"missing txt for {sorted(stls - txts)}, "
+                f"missing stl for {sorted(txts - stls)}")
 
     if failures:
         print("\nBUILD FAILED:", file=sys.stderr)

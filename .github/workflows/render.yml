@@ -6,7 +6,10 @@ on:
       - "src/**"
       - "config/**"
       - "scripts/**"
+      - "tests/**"
       - ".github/workflows/render.yml"
+    tags:
+      - "v*"
   workflow_dispatch:
 
 permissions:
@@ -18,19 +21,38 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install OpenSCAD
+      - name: Install OpenSCAD and xvfb
         run: sudo apt-get update && sudo apt-get install -y --no-install-recommends openscad xvfb
 
-      - name: Render, validate, and describe all pieces
+      - name: Render, validate, and describe all kits
         run: python3 scripts/build.py
 
-      - name: Upload STL + txt bundle
+      - name: Package kit bundles
+        run: |
+          mkdir -p dist
+          cd generated
+          for d in */ ; do
+            [ "$d" = ".fit/" ] && continue
+            zip -qr "../dist/${d%/}.zip" "$d"
+          done
+          ls -la ../dist/
+
+      - name: Upload rendered outputs
         uses: actions/upload-artifact@v4
         with:
           name: stl-bundle
-          path: generated/
+          path: |
+            generated/
+            !generated/.fit/**
+
+      - name: Upload kit zips
+        uses: actions/upload-artifact@v4
+        with:
+          name: kit-zips
+          path: dist/
 
       - name: Commit generated files back to branch
+        if: startsWith(github.ref, 'refs/heads/')
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -39,3 +61,10 @@ jobs:
             git commit -m "CI: regenerate STL + txt outputs [skip ci]"
             git push
           fi
+
+      - name: Publish release with kit bundles (tags only)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.zip
+          generate_release_notes: true

@@ -58,6 +58,12 @@ Current kits: `stonebound_keep` (tab & slot, seed 42),
 `lodestone_vault` (5x2mm magnets, seed 7), plus the `calibration`
 coupon set.
 
+Each kit folder also carries a `manifest.csv` (per-piece bounding
+box, solid volume/weight, triangle count, magnets needed, plus kit
+totals — including the magnet shopping list), and every non-coupon
+piece has its part ID embossed into a hidden face (floor undersides,
+wall foot rails) so printed pieces stay identifiable.
+
 ## Layout
 
 ```
@@ -81,13 +87,17 @@ Renders every kit in `config/kits/` into `generated/<kit_id>/`,
 runs mesh QA (non-empty, no degenerate faces, manifold), writes a
 matching `.txt` description per STL, then runs the snap-fit tests:
 each mated piece pair is boolean-intersected and must produce zero
-overlap volume. Fails loudly if any piece breaks.
+overlap volume. A final parity gate requires every `.stl` to have its
+matching `.txt` and vice versa. Fails loudly if any piece breaks.
 
 ## CI
 
 `.github/workflows/render.yml` runs the same build on every push that
-touches sources, uploads the bundle as a workflow artifact, and commits
-the regenerated `generated/` files back to the branch.
+touches sources, uploads the outputs and per-kit `.zip` bundles as
+workflow artifacts, and commits the regenerated `generated/` files
+back to the branch. Pushing a `v*` tag additionally publishes a
+GitHub Release with the kit zips attached — ready-to-list digital
+bundles.
 
 ## Roadmap
 

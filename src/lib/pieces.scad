@@ -65,6 +65,12 @@ FOOT_W        = 3;
 FOOT_H        = 1.4;
 FOOT_GROOVE_D = 1.6;
 
+// -- Part identification ------------------------------------------------
+// When non-empty, the part ID is embossed 0.35-0.4mm into a hidden
+// face: floor tiles on the underside, walls into the bottom of the
+// foot rail. Mirrored so it reads correctly with the piece flipped.
+PART_ID = "";
+
 // Structural thicknesses auto-grow when a magnet must fit in the edge.
 function floor_t() = (CONNECTOR == "magnet")
     ? max(scaled(FLOOR_THICKNESS), magnet_d() + 2.4)
@@ -95,6 +101,13 @@ module floor_tile(w = 1, l = 1, interior_grooves = true) {
             }
         }
         if (FLOOR_GROOVES) floor_grooves(w, l, t, interior_grooves);
+        if (PART_ID != "")
+            translate([grid(w) / 2, grid(l) / 2, -EPS])
+                linear_extrude(height = 0.4 + EPS)
+                    mirror([1, 0, 0])
+                        text(PART_ID, size = 2.0, halign = "center",
+                             valign = "center",
+                             font = "Liberation Sans:style=Bold");
         if (CONNECTOR == "tab") {
             for (j = [0 : l - 1])
                 translate([0, grid(j + 0.5), 0]) tab_female(t);
@@ -185,6 +198,7 @@ module wall_straight(units = 1, opening = OPENING, decor = DECOR) {
             }
             opening_void(len / 2, opening);
             decor_cut(len / 2, decor);
+            if (PART_ID != "" && WALL_FOOT) rail_id_emboss(len / 2);
         }
         opening_bars(len / 2, opening);
     }
@@ -196,6 +210,16 @@ function wall_fastener_heights() =
             ? [grid(0.5), wall_h() - grid(0.5)]
             : [wall_h() / 2])
         : [];
+
+// Part ID recessed into the bottom face of the foot rail.
+module rail_id_emboss(cx) {
+    translate([cx, 0, -FOOT_H - EPS])
+        linear_extrude(height = 0.35 + EPS)
+            mirror([1, 0, 0])
+                text(PART_ID, size = 1.9, halign = "center",
+                     valign = "center",
+                     font = "Liberation Sans:style=Bold");
+}
 
 // Tenon rail under the wall base; seats into the floor groove channel.
 module foot_rail(len) {
@@ -240,6 +264,7 @@ module wall_corner(mirrored = false) {
                 translate([0, grid(1), 0]) mirror([0, 1, 0])
                     rotate([0, 0, 90]) edge_fastener(z);
             }
+            if (PART_ID != "" && WALL_FOOT) rail_id_emboss(grid(0.5));
         }
 }
 

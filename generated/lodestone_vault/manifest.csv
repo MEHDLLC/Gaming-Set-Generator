@@ -1,0 +1,8 @@
+name,piece_type,file,triangles,bbox_x_mm,bbox_y_mm,bbox_z_mm,solid_volume_cm3,solid_pla_g,magnets_needed
+floor_1x1,floor tile (1x1),floor_1x1.stl,2096,25.4,25.4,7.4,4.36,5.4,4
+wall_1u,straight wall (1 unit),wall_1u.stl,1768,25.4,7.4,52.2,9.48,11.8,4
+wall_corner_r,90-degree corner wall,wall_corner_r.stl,3100,29.1,29.1,52.2,19.13,23.7,4
+wall_door,doorway wall (2 units),wall_door.stl,2532,50.8,7.4,52.2,14.63,18.1,4
+wall_window,window wall (1 unit),wall_window.stl,2600,25.4,7.4,52.2,8.62,10.7,4
+mosaic_center,mosaic centerpiece tile (2x2),mosaic_center.stl,5476,50.8,50.8,7.4,18.14,22.5,4
+# kit totals: 6 pieces, 92g solid PLA, 24 magnets (5x2mm)
