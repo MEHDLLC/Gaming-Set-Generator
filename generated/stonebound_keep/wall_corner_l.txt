@@ -1,5 +1,5 @@
 1. Design Concept:
-This 90-degree corner wall features a plain, left-handed design with tab & slot connectors, generated
+This 90-degree corner wall features a brick masonry, left-handed design with tab & slot connectors, generated
 using a GRID_UNIT 25.4mm, FIT normal, seed 42 configuration. Part of the Stonebound Keep modular dungeon/castle set.
 
 2. Use Suggestion:

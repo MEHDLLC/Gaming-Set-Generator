@@ -2,51 +2,154 @@
   "kit_id": "stonebound_keep",
   "kit_name": "Stonebound Keep",
   "seed": 42,
-  "shared": { "CONNECTOR": "tab", "FIT": "normal" },
+  "shared": {
+    "CONNECTOR": "tab",
+    "FIT": "normal"
+  },
   "preview": true,
   "pieces": [
-    { "name": "floor_1x1", "scad": "src/pieces/floor_tile.scad",
-      "params": { "FLOOR_W": 1, "FLOOR_L": 1 },
-      "piece_type": "floor tile (1x1)", "style": "plain flat",
-      "extra": "1x1 squares" },
-    { "name": "floor_2x2", "scad": "src/pieces/floor_tile.scad",
-      "params": { "FLOOR_W": 2, "FLOOR_L": 2 },
-      "piece_type": "floor tile (2x2)", "style": "plain flat",
-      "extra": "2x2 squares" },
-    { "name": "wall_1u", "scad": "src/pieces/wall_straight.scad",
-      "params": { "WALL_UNITS": 1 },
-      "piece_type": "straight wall (1 unit)", "style": "plain" },
-    { "name": "wall_2u", "scad": "src/pieces/wall_straight.scad",
-      "params": { "WALL_UNITS": 2 },
-      "piece_type": "straight wall (2 units)", "style": "plain" },
-    { "name": "wall_corner_r", "scad": "src/pieces/wall_corner.scad",
-      "params": { "CORNER_MIRRORED": false },
-      "piece_type": "90-degree corner wall", "style": "plain, right-handed" },
-    { "name": "wall_corner_l", "scad": "src/pieces/wall_corner.scad",
-      "params": { "CORNER_MIRRORED": true },
-      "piece_type": "90-degree corner wall", "style": "plain, left-handed" },
-    { "name": "wall_parapet", "scad": "src/pieces/wall_straight.scad",
-      "params": { "WALL_UNITS": 1, "WALL_HEIGHT_UNITS": 1 },
-      "piece_type": "parapet wall (1 unit, half height)", "style": "plain" },
-    { "name": "wall_tower", "scad": "src/pieces/wall_straight.scad",
-      "params": { "WALL_UNITS": 1, "WALL_HEIGHT_UNITS": 3 },
-      "piece_type": "tower wall (1 unit, extra tall)", "style": "plain" },
-    { "name": "wall_door", "scad": "src/pieces/wall_straight.scad",
-      "params": { "WALL_UNITS": 2, "OPENING": "$door" },
-      "piece_type": "doorway wall (2 units)", "style": "{door}" },
-    { "name": "wall_window", "scad": "src/pieces/wall_straight.scad",
-      "params": { "WALL_UNITS": 1, "OPENING": "$window" },
-      "piece_type": "window wall (1 unit)", "style": "{window}" },
-    { "name": "wall_decor", "scad": "src/pieces/wall_straight.scad",
-      "params": { "WALL_UNITS": 1, "DECOR": "$decor" },
-      "piece_type": "decorated wall (1 unit)", "style": "{decor}" },
-    { "name": "mosaic_center", "scad": "src/pieces/mosaic_tile.scad",
-      "params": { "MOSAIC": "$mosaic", "ETCH_DEPTH": 0.6 },
+    {
+      "name": "floor_1x1",
+      "scad": "src/pieces/floor_tile.scad",
+      "params": {
+        "FLOOR_W": 1,
+        "FLOOR_L": 1
+      },
+      "piece_type": "floor tile (1x1)",
+      "style": "{texture} floor",
+      "extra": "1x1 squares"
+    },
+    {
+      "name": "floor_2x2",
+      "scad": "src/pieces/floor_tile.scad",
+      "params": {
+        "FLOOR_W": 2,
+        "FLOOR_L": 2
+      },
+      "piece_type": "floor tile (2x2)",
+      "style": "{texture} floor",
+      "extra": "2x2 squares"
+    },
+    {
+      "name": "wall_1u",
+      "scad": "src/pieces/wall_straight.scad",
+      "params": {
+        "WALL_UNITS": 1
+      },
+      "piece_type": "straight wall (1 unit)",
+      "style": "{texture}"
+    },
+    {
+      "name": "wall_2u",
+      "scad": "src/pieces/wall_straight.scad",
+      "params": {
+        "WALL_UNITS": 2
+      },
+      "piece_type": "straight wall (2 units)",
+      "style": "{texture}"
+    },
+    {
+      "name": "wall_corner_r",
+      "scad": "src/pieces/wall_corner.scad",
+      "params": {
+        "CORNER_MIRRORED": false
+      },
+      "piece_type": "90-degree corner wall",
+      "style": "{texture}, right-handed"
+    },
+    {
+      "name": "wall_corner_l",
+      "scad": "src/pieces/wall_corner.scad",
+      "params": {
+        "CORNER_MIRRORED": true
+      },
+      "piece_type": "90-degree corner wall",
+      "style": "{texture}, left-handed"
+    },
+    {
+      "name": "wall_parapet",
+      "scad": "src/pieces/wall_straight.scad",
+      "params": {
+        "WALL_UNITS": 1,
+        "WALL_HEIGHT_UNITS": 1
+      },
+      "piece_type": "parapet wall (1 unit, half height)",
+      "style": "{texture}"
+    },
+    {
+      "name": "wall_tower",
+      "scad": "src/pieces/wall_straight.scad",
+      "params": {
+        "WALL_UNITS": 1,
+        "WALL_HEIGHT_UNITS": 3
+      },
+      "piece_type": "tower wall (1 unit, extra tall)",
+      "style": "{texture}"
+    },
+    {
+      "name": "wall_door",
+      "scad": "src/pieces/wall_straight.scad",
+      "params": {
+        "WALL_UNITS": 2,
+        "OPENING": "$door"
+      },
+      "piece_type": "doorway wall (2 units)",
+      "style": "{door}"
+    },
+    {
+      "name": "wall_window",
+      "scad": "src/pieces/wall_straight.scad",
+      "params": {
+        "WALL_UNITS": 1,
+        "OPENING": "$window"
+      },
+      "piece_type": "window wall (1 unit)",
+      "style": "{window}"
+    },
+    {
+      "name": "wall_decor",
+      "scad": "src/pieces/wall_straight.scad",
+      "params": {
+        "WALL_UNITS": 1,
+        "DECOR": "$decor"
+      },
+      "piece_type": "decorated wall (1 unit)",
+      "style": "{decor}"
+    },
+    {
+      "name": "mosaic_center",
+      "scad": "src/pieces/mosaic_tile.scad",
+      "params": {
+        "MOSAIC": "$mosaic",
+        "ETCH_DEPTH": 0.6,
+        "TEXTURE": "none"
+      },
       "piece_type": "mosaic centerpiece tile (2x2)",
-      "style": "etched {mosaic}", "extra": "0.6mm etch" },
-    { "name": "mosaic_blank", "scad": "src/pieces/mosaic_tile.scad",
-      "params": { "MOSAIC": "blank", "ETCH_DEPTH": 0.6 },
+      "style": "etched {mosaic}",
+      "extra": "0.6mm etch"
+    },
+    {
+      "name": "mosaic_blank",
+      "scad": "src/pieces/mosaic_tile.scad",
+      "params": {
+        "MOSAIC": "blank",
+        "ETCH_DEPTH": 0.6,
+        "TEXTURE": "none"
+      },
       "piece_type": "mosaic centerpiece tile (2x2)",
-      "style": "border ring, blank center", "extra": "for custom painting" }
+      "style": "border ring, blank center",
+      "extra": "for custom painting"
+    },
+    {
+      "name": "stairs_1x2",
+      "scad": "src/pieces/stairs_straight.scad",
+      "params": {
+        "STAIR_W": 1,
+        "STAIR_L": 2
+      },
+      "piece_type": "staircase (1x2)",
+      "style": "{texture}, 8 steps to wall height",
+      "extra": "42-degree climb"
+    }
   ]
 }

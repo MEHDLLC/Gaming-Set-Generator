@@ -12,4 +12,5 @@ modular dungeon
 rpg dungeon tiles
 dungeon floor tile
 dnd tiles
+stone wall
 magnetic terrain

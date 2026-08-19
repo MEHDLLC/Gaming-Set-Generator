@@ -26,6 +26,7 @@ and shipped as a matching `.stl` + `.txt` description pair.
 | `wall_straight` | any length; heights: parapet (1u) / standard (2u) / tower (3u); openings below |
 | `wall_corner` | 90°, right/left-handed (tab chains are chiral) |
 | `mosaic_tile` | centerpiece floor: compass rose, heraldic shield, knotwork lattice, or blank ring; `ETCH_DEPTH` 0.6 = painting guide, 1.2 = shadow relief |
+| `stairs_straight` | staircase on a floor-tile footprint, 4 steps per grid unit of run, rises to wall-top height |
 
 Wall openings (`OPENING` parameter): `door_arch`, `door_rect`,
 `door_portcullis` (2-unit walls), `window_slit` (splayed embrasure),
@@ -35,6 +36,13 @@ rise, sill heights, and bar pitch are all parameters.
 Wall decor (`DECOR` parameter, one feature per wall): `sconce`
 (angled torch socket), `banner_peg` (rod peg with retaining tip),
 `gargoyle_socket` (glue pocket for a separately printed figure).
+
+Surface texture (`TEXTURE` parameter, seeded by `TEXTURE_SEED`):
+`ashlar` (coursed stone), `brick` (running bond), `rubble` (rough
+flagstone) — mortar grooves plus subtle random block insets, cut into
+wall faces, floor tops, and stair sides. Deterministic per seed, so a
+kit's look is exactly reproducible; grooves keep clear of connector
+ends. Texture is a seeded kit style slot like doors and windows.
 
 Floors fill grid cells; walls run along grid lines, centered on them.
 Walls carry a tenon rail underfoot that drops into the floor groove

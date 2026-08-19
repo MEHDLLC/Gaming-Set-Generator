@@ -1,5 +1,5 @@
 1. Design Concept:
-This floor tile (1x1) features a plain flat design with 5x2mm magnet pocket connectors, generated
+This floor tile (1x1) features a coursed ashlar stone floor design with 5x2mm magnet pocket connectors, generated
 using a GRID_UNIT 25.4mm, FIT normal, seed 7, 1x1 squares configuration. Part of the Lodestone Vault modular dungeon/castle set.
 
 2. Use Suggestion:

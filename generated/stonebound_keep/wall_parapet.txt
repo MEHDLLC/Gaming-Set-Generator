@@ -1,5 +1,5 @@
 1. Design Concept:
-This parapet wall (1 unit, half height) features a plain design with tab & slot connectors, generated
+This parapet wall (1 unit, half height) features a brick masonry design with tab & slot connectors, generated
 using a GRID_UNIT 25.4mm, FIT normal, seed 42 configuration. Part of the Stonebound Keep modular dungeon/castle set.
 
 2. Use Suggestion:

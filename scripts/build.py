@@ -32,6 +32,7 @@ STYLE_POOLS = {
     "window":  ["window_slit", "window_arch", "window_barred"],
     "mosaic":  ["compass", "shield", "knotwork"],
     "decor":   ["sconce", "banner_peg", "gargoyle_socket"],
+    "texture": ["ashlar", "brick", "rubble"],
 }
 
 STYLE_NAMES = {
@@ -43,6 +44,8 @@ STYLE_NAMES = {
     "knotwork": "knotwork lattice", "blank": "blank ring",
     "sconce": "torch sconce", "banner_peg": "banner peg",
     "gargoyle_socket": "gargoyle mount",
+    "ashlar": "coursed ashlar stone", "brick": "brick masonry",
+    "rubble": "rough flagstone",
 }
 
 # Keys a piece may never override — this is what guarantees every
@@ -154,6 +157,9 @@ STYLE_TAGS = {
     "shield": ["heraldry"],
     "knotwork": ["celtic knot"],
     "blank": ["paintable tile"],
+    "ashlar": ["stone wall"],
+    "brick": ["brick wall"],
+    "rubble": ["flagstone"],
 }
 
 
@@ -161,7 +167,9 @@ def suggest_tags(piece, params):
     """Etsy-style tag list: max 13 tags, each 20 characters or less."""
     tags = list(BASE_TAGS)
     scad = piece["scad"]
-    if "floor_tile" in scad:
+    if "stairs" in scad:
+        tags += ["dungeon stairs", "castle stairs"]
+    elif "floor_tile" in scad:
         tags += ["dungeon floor tile", "dnd tiles"]
     elif "mosaic" in scad:
         tags += ["dungeon floor tile", "mosaic tile"]
@@ -171,7 +179,7 @@ def suggest_tags(piece, params):
         tags += ["dungeon wall"]
     elif "fit_coupon" in scad:
         tags += ["calibration", "test print"]
-    for key in ("OPENING", "DECOR", "MOSAIC"):
+    for key in ("OPENING", "DECOR", "MOSAIC", "TEXTURE"):
         tags += STYLE_TAGS.get(params.get(key, ""), [])
     if params.get("CONNECTOR") == "magnet":
         tags.append("magnetic terrain")
@@ -259,6 +267,8 @@ def build_kit(kit, failures):
         params = {**shared, **own}
         if not calibration:
             params["PART_ID"] = f"{kit_code(kit)} {name}"
+            params.setdefault("TEXTURE", styles.get("texture", "none"))
+            params.setdefault("TEXTURE_SEED", kit.get("seed", 0))
 
         stl = kit_dir / f"{name}.stl"
         proc = render_scad(stl, ROOT / piece["scad"], params)
@@ -335,6 +345,8 @@ def render_previews(kit, styles, kit_dir, failures):
         print(f"[skip]   {kit['kit_id']}: no xvfb, previews not rendered")
         return
     style_params = {
+        "TEXTURE":      styles.get("texture", "none"),
+        "TEXTURE_SEED": kit.get("seed", 0),
         "DOOR_STYLE":   styles.get("door", "door_arch"),
         "WINDOW_STYLE": styles.get("window", "window_arch"),
         "MOSAIC_STYLE": styles.get("mosaic", "compass"),

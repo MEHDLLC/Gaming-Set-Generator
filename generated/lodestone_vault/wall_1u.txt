@@ -1,5 +1,5 @@
 1. Design Concept:
-This straight wall (1 unit) features a plain design with 5x2mm magnet pocket connectors, generated
+This straight wall (1 unit) features a coursed ashlar stone design with 5x2mm magnet pocket connectors, generated
 using a GRID_UNIT 25.4mm, FIT normal, seed 7 configuration. Part of the Lodestone Vault modular dungeon/castle set.
 
 2. Use Suggestion:

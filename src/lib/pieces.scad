@@ -101,6 +101,7 @@ module floor_tile(w = 1, l = 1, interior_grooves = true) {
             }
         }
         if (FLOOR_GROOVES) floor_grooves(w, l, t, interior_grooves);
+        floor_texture_cuts(w, l, TEXTURE_SEED);
         if (PART_ID != "")
             translate([grid(w) / 2, grid(l) / 2, -EPS])
                 linear_extrude(height = 0.4 + EPS)
@@ -198,6 +199,7 @@ module wall_straight(units = 1, opening = OPENING, decor = DECOR) {
             }
             opening_void(len / 2, opening);
             decor_cut(len / 2, decor);
+            wall_texture_cuts(len, TEXTURE_SEED);
             if (PART_ID != "" && WALL_FOOT) rail_id_emboss(len / 2);
         }
         opening_bars(len / 2, opening);
@@ -264,6 +266,10 @@ module wall_corner(mirrored = false) {
                 translate([0, grid(1), 0]) mirror([0, 1, 0])
                     rotate([0, 0, 90]) edge_fastener(z);
             }
+            translate([-wt / 2, 0, 0])
+                wall_texture_cuts(grid(1) + wt / 2, TEXTURE_SEED + 3);
+            translate([0, -wt / 2, 0]) rotate([0, 0, 90])
+                wall_texture_cuts(grid(1) + wt / 2, TEXTURE_SEED + 5);
             if (PART_ID != "" && WALL_FOOT) rail_id_emboss(grid(0.5));
         }
 }
@@ -468,5 +474,123 @@ module knot_2d(R) {
             rotate(-45) translate([k * 6, 0])
                 square([1.4, 4 * R], center = true);
         }
+    }
+}
+
+// ---------------------------------------------------------------------
+// Surface texture: seeded masonry relief, cut as mortar grooves plus
+// subtle random per-block insets. Deterministic for a given seed, so
+// a kit's look is exactly reproducible. Grooves stay TEX_MARGIN away
+// from wall ends so connector slots are never punctured.
+// TEXTURE: "none" | "ashlar" | "brick" | "rubble"
+TEXTURE      = "none";
+TEXTURE_SEED = 0;
+TEX_DEPTH    = 0.7;   // groove depth (absolute; wall core must survive)
+TEX_GROOVE   = 0.8;   // groove width
+TEX_MARGIN   = 5;     // keep-out near connector ends (absolute)
+
+function tex_course() = TEXTURE == "brick" ? scaled(4)  : scaled(6.5);
+function tex_block()  = TEXTURE == "brick" ? scaled(8)  :
+                        TEXTURE == "rubble" ? scaled(9) : scaled(11);
+// rubble jitters joints hard; ashlar keeps courses tidy.
+function tex_jitter() = TEXTURE == "rubble" ? 1.0 :
+                        TEXTURE == "ashlar" ? 0.3 : 0.15;
+
+// Mortar cuts for one face, in face-local coords: x along the face
+// (0..W), z up (0..H), cutting from the y=0 plane down to -TEX_DEPTH.
+// Place with a transform that puts local y=0 on the face plane,
+// material toward -y.
+module masonry_face(W, H, seed, mx = TEX_MARGIN) {
+    ch = tex_course();
+    bw = tex_block();
+    nc = max(1, floor(H / ch));
+    // horizontal course lines
+    for (k = [1 : 1 : nc - 1])
+        translate([mx, -TEX_DEPTH, k * ch - TEX_GROOVE / 2])
+            cube([max(W - 2 * mx, EPS), TEX_DEPTH + EPS, TEX_GROOVE]);
+    // vertical joints, running-bond staggered, jittered per course
+    for (k = [0 : 1 : nc - 1]) {
+        z1 = min((k + 1) * ch, H);
+        jit = rands(-bw / 3, bw / 3, 10, seed * 31 + k);
+        off = (k % 2 == 0) ? 0 : bw / 2;
+        for (i = [0 : 9]) {
+            x = mx + off + i * bw + jit[i] * tex_jitter();
+            if (x > mx + 1 && x < W - mx - 1)
+                translate([x - TEX_GROOVE / 2, -TEX_DEPTH, k * ch])
+                    cube([TEX_GROOVE, TEX_DEPTH + EPS, z1 - k * ch]);
+        }
+    }
+    // subtle random block insets for relief
+    for (k = [0 : 1 : nc - 1]) {
+        ins = rands(0, 0.3, 10, seed * 77 + k);
+        off = (k % 2 == 0) ? 0 : bw / 2;
+        for (i = [0 : 9]) {
+            x0 = max(mx + off + i * bw, mx);
+            if (x0 < W - mx - 1 && ins[i] > 0.15)
+                translate([x0, -ins[i], k * ch])
+                    cube([min(bw, W - mx - x0), ins[i] + EPS,
+                          min(ch, H - k * ch)]);
+        }
+    }
+}
+
+// Texture cuts for both faces of a straight wall span.
+module wall_texture_cuts(len, seed) {
+    if (TEXTURE != "none") {
+        wt = wall_t();
+        h  = wall_h();
+        translate([0, wt / 2, 0]) masonry_face(len, h, seed);
+        translate([0, -wt / 2, 0]) mirror([0, 1, 0])
+            masonry_face(len, h, seed + 1);
+    }
+}
+
+// Flagstone-style cuts into a floor tile's top face.
+module floor_texture_cuts(w, l, seed) {
+    if (TEXTURE != "none")
+        translate([0, grid(l), floor_t()]) rotate([90, 0, 0])
+            masonry_face(grid(w), grid(l), seed + 2, 2);
+}
+
+// ---------------------------------------------------------------------
+// Straight staircase: floor-tile footprint (w x l grid cells), rising
+// from ground-floor surface height to the wall top over 4 steps per
+// grid unit of run (~42 degrees at defaults). The low (-Y) edge
+// carries a standard floor-edge connector so it butts a floor tile;
+// side faces take the kit's masonry texture where material exists.
+module stairs_straight(w = 1, l = 2) {
+    t = floor_t();
+    n = 4 * l;
+    rise = (wall_h() - t) / n;
+    going = grid(l) / n;
+    difference() {
+        union() {
+            for (k = [0 : n - 1])
+                translate([0, k * going, 0])
+                    cube([grid(w), grid(l) - k * going,
+                          t + (k + 1) * rise]);
+            cube([grid(w), grid(l), t]);
+        }
+        if (CONNECTOR == "tab")
+            for (i = [0 : w - 1])
+                translate([grid(i + 0.5), 0, 0])
+                    rotate([0, 0, 90]) tab_female(t);
+        if (CONNECTOR == "magnet" || CONNECTOR == "dowel")
+            for (i = [0 : w - 1])
+                translate([grid(i + 0.5), 0, 0])
+                    rotate([0, 0, 90]) edge_fastener(t / 2);
+        if (TEXTURE != "none") {
+            rotate([0, 0, 90])
+                masonry_face(grid(l), wall_h(), TEXTURE_SEED + 8, 2);
+            translate([grid(w), grid(l), 0]) rotate([0, 0, -90])
+                masonry_face(grid(l), wall_h(), TEXTURE_SEED + 9, 2);
+        }
+        if (PART_ID != "")
+            translate([grid(w) / 2, grid(l) / 2, -EPS])
+                linear_extrude(height = 0.4 + EPS)
+                    mirror([1, 0, 0])
+                        text(PART_ID, size = 2.0, halign = "center",
+                             valign = "center",
+                             font = "Liberation Sans:style=Bold");
     }
 }

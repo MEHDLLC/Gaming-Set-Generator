@@ -13,3 +13,4 @@ rpg dungeon tiles
 dungeon wall
 arrow slit
 castle window
+brick wall

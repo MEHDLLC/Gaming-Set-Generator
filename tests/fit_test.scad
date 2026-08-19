@@ -11,7 +11,8 @@ TEST = "floor_x";
 
 // A typo'd TEST would intersect two empty modules and false-pass.
 valid = ["floor_x", "floor_y", "wall_wall", "corner_male",
-         "corner_female", "wall_on_floor", "wall_on_floor_interior"];
+         "corner_female", "wall_on_floor", "wall_on_floor_interior",
+         "stairs_on_floor"];
 assert(len([for (v = valid) if (v == TEST) v]) == 1,
        str("unknown TEST: ", TEST));
 
@@ -24,6 +25,9 @@ module piece_a() {
     // 2x2 tile's interior line: foot tenon must clear the groove.
     else if (TEST == "wall_on_floor" || TEST == "wall_on_floor_interior")
         translate([0, grid(1), floor_t()]) wall_straight(1);
+    // Stairs' low edge butts the floor tile's +Y male edge.
+    else if (TEST == "stairs_on_floor")
+        translate([0, grid(1), 0]) stairs_straight(1, 2);
 }
 
 module piece_b() {
@@ -45,6 +49,8 @@ module piece_b() {
     }
     else if (TEST == "wall_on_floor_interior")
         floor_tile(2, 2);
+    else if (TEST == "stairs_on_floor")
+        floor_tile(1, 1);
 }
 
 intersection() {

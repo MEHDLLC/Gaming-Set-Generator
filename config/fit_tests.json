@@ -47,5 +47,21 @@
       "TEST": "wall_on_floor_interior",
       "CONNECTOR": "tab"
     }
+  },
+  {
+    "name": "stairs_on_floor",
+    "params": {
+      "TEST": "stairs_on_floor",
+      "CONNECTOR": "tab"
+    }
+  },
+  {
+    "name": "textured_wall_wall",
+    "params": {
+      "TEST": "wall_wall",
+      "CONNECTOR": "tab",
+      "TEXTURE": "ashlar",
+      "TEXTURE_SEED": 42
+    }
   }
 ]

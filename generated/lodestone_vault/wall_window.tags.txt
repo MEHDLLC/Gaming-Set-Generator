@@ -13,4 +13,5 @@ rpg dungeon tiles
 dungeon wall
 castle window
 prison window
+stone wall
 magnetic terrain

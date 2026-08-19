@@ -1,5 +1,5 @@
 1. Design Concept:
-This floor tile (1x1) features a plain flat design with tab & slot connectors, generated
+This floor tile (1x1) features a brick masonry floor design with tab & slot connectors, generated
 using a GRID_UNIT 25.4mm, FIT normal, seed 42, 1x1 squares configuration. Part of the Stonebound Keep modular dungeon/castle set.
 
 2. Use Suggestion:

@@ -1,5 +1,5 @@
 1. Design Concept:
-This 90-degree corner wall features a plain design with 5x2mm magnet pocket connectors, generated
+This 90-degree corner wall features a coursed ashlar stone design with 5x2mm magnet pocket connectors, generated
 using a GRID_UNIT 25.4mm, FIT normal, seed 7 configuration. Part of the Lodestone Vault modular dungeon/castle set.
 
 2. Use Suggestion:
