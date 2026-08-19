@@ -1,0 +1,51 @@
+[
+  {
+    "name": "floor_floor_x",
+    "params": {
+      "TEST": "floor_x",
+      "CONNECTOR": "tab"
+    }
+  },
+  {
+    "name": "floor_floor_y",
+    "params": {
+      "TEST": "floor_y",
+      "CONNECTOR": "tab"
+    }
+  },
+  {
+    "name": "wall_wall",
+    "params": {
+      "TEST": "wall_wall",
+      "CONNECTOR": "tab"
+    }
+  },
+  {
+    "name": "corner_to_wall_male",
+    "params": {
+      "TEST": "corner_male",
+      "CONNECTOR": "tab"
+    }
+  },
+  {
+    "name": "corner_to_wall_female",
+    "params": {
+      "TEST": "corner_female",
+      "CONNECTOR": "tab"
+    }
+  },
+  {
+    "name": "wall_on_floor_pair",
+    "params": {
+      "TEST": "wall_on_floor",
+      "CONNECTOR": "tab"
+    }
+  },
+  {
+    "name": "wall_on_floor_interior_line",
+    "params": {
+      "TEST": "wall_on_floor_interior",
+      "CONNECTOR": "tab"
+    }
+  }
+]

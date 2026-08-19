@@ -1,0 +1,43 @@
+{
+  "kit_id": "calibration",
+  "kit_name": "Foundation Calibration Set",
+  "calibration": true,
+  "pieces": [
+    {
+      "name": "fit_coupon_tab",
+      "scad": "src/pieces/fit_coupon.scad",
+      "params": { "CONNECTOR": "tab", "FIT": "normal" },
+      "piece_type": "fit-test coupon",
+      "style": "calibration",
+      "connector_type": "tab & slot",
+      "param_summary": "GRID_UNIT 25.4mm, FIT normal (0.15mm clearance)"
+    },
+    {
+      "name": "fit_coupon_magnet_5x2",
+      "scad": "src/pieces/fit_coupon.scad",
+      "params": { "CONNECTOR": "magnet", "MAGNET": "5x2", "FIT": "normal" },
+      "piece_type": "fit-test coupon",
+      "style": "calibration",
+      "connector_type": "5x2mm magnet pocket",
+      "param_summary": "GRID_UNIT 25.4mm, FIT normal, 5x2mm magnets"
+    },
+    {
+      "name": "fit_coupon_dowel",
+      "scad": "src/pieces/fit_coupon.scad",
+      "params": { "CONNECTOR": "dowel", "FIT": "normal" },
+      "piece_type": "fit-test coupon",
+      "style": "calibration",
+      "connector_type": "dowel pin (1.75mm filament)",
+      "param_summary": "GRID_UNIT 25.4mm, FIT normal (0.15mm clearance)"
+    },
+    {
+      "name": "fit_coupon_butt",
+      "scad": "src/pieces/fit_coupon.scad",
+      "params": { "CONNECTOR": "none", "FIT": "normal" },
+      "piece_type": "fit-test coupon",
+      "style": "calibration",
+      "connector_type": "flush butt-joint",
+      "param_summary": "GRID_UNIT 25.4mm, no connector"
+    }
+  ]
+}

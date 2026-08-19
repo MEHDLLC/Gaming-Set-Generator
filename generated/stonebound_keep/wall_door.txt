@@ -1,0 +1,14 @@
+1. Design Concept:
+This doorway wall (2 units) features a portcullis gateway design with tab & slot connectors, generated
+using a GRID_UNIT 25.4mm, FIT normal, seed 42 configuration. Part of the Stonebound Keep modular dungeon/castle set.
+
+2. Use Suggestion:
+Ideal for tabletop RPG terrain, diorama building, or display alongside matching Stonebound Keep
+floor and wall pieces. Combine with other pieces from this set for a full modular scene.
+
+3. Print Recommendations:
+Recommended layer height: 0.2mm | Infill: 15-20% | No supports needed if printed flat-side down |
+Connector tolerances designed for 0.4mm nozzle, may require light sanding for tight fit.
+
+4. Thanks for looking! I can generate similar items using a program I built. Hit me up if you'd
+like something custom! Thanks for liking and following my page!

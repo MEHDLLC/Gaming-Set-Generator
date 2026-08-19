@@ -1,18 +1,23 @@
-// pieces.scad — the core piece library (Phase 1).
+// pieces.scad — the core piece library.
 // Requires grid.scad and connectors.scad to be included first.
 //
 // Grid convention: floors fill grid cells; walls run along grid lines,
 // centered on them. Chains of gendered (tab) pieces alternate
 // male-into-female; magnet/dowel/none pieces are genderless.
+//
+// Style selections (OPENING, DECOR, MOSAIC, ETCH_DEPTH) are globals so
+// the CLI can drive single-piece renders, but every module also takes
+// them as arguments so one scene can mix styles (kit previews, future
+// floorplan compiler).
 
 // Wall-end dovetail, sized to fit inside the wall thickness (absolute).
 WALL_TAB_NECK  = 3;
 WALL_TAB_HEAD  = 4.8;
 WALL_TAB_DEPTH = 4;
 
-// -- Phase 2: openings ------------------------------------------------
-// OPENING: "none" | "door_arch" | "door_rect" | "door_portcullis" |
-//          "window_slit" | "window_arch" | "window_barred"
+// -- Openings -----------------------------------------------------------
+// "none" | "door_arch" | "door_rect" | "door_portcullis" |
+// "window_slit" | "window_arch" | "window_barred"
 OPENING = "none";
 
 // Door cutout (scaled; heights measured from the wall base).
@@ -26,8 +31,8 @@ WIN_H         = 12;   // total height, arch included
 WIN_SILL      = 22;
 WIN_ARCH_RISE = 4;
 
-// Arrow slit (scaled). The slit splays open toward the -Y (interior)
-// face by SLIT_SPLAY x width and +/-2mm vertically (embrasure).
+// Arrow slit (scaled). Splays open toward the -Y (interior) face by
+// SLIT_SPLAY x width and +/-2mm vertically (embrasure).
 SLIT_W     = 3;
 SLIT_H     = 24;
 SLIT_SILL  = 14;
@@ -37,10 +42,22 @@ SLIT_SPLAY = 3.5;
 BAR_PITCH = 5.5;
 BAR_SIZE  = 2;
 
-// -- Phase 2: wall-to-floor registration -------------------------------
+// -- Wall decor ---------------------------------------------------------
+// "none" | "sconce" | "banner_peg" | "gargoyle_socket"
+DECOR        = "none";
+DECOR_H_FRAC = 0.72;
+SCONCE_D     = 4;      // torch stem diameter (absolute, fit)
+PEG_D        = 3;
+
+// -- Mosaic centerpieces --------------------------------------------------
+// "none" | "compass" | "shield" | "knotwork" | "blank"
+MOSAIC     = "none";
+ETCH_DEPTH = 0.6;   // scaled; ~0.6 painting guide, ~1.2 shadow relief
+
+// -- Wall-to-floor registration -------------------------------------------
 // Walls carry a tenon rail under their base that drops into a groove
-// cut along the floor tiles' top edges (and along interior grid lines
-// of multi-cell tiles). Two adjacent tiles each contribute half the
+// cut along floor tiles' top edges (and interior grid lines of
+// multi-cell tiles). Two adjacent tiles each contribute half the
 // channel. Fit-critical -> absolute mm.
 WALL_FOOT     = true;
 FLOOR_GROOVES = true;
@@ -135,20 +152,20 @@ module edge_fastener(z) {
 // Straight wall: `units` grid squares long, centered on the grid line
 // (y = 0). Tab gender: male at +X end, female at -X end; the tab runs
 // the full height as a vertical sliding dovetail. Magnet/dowel: two
-// fasteners per end face.
-module wall_straight(units = 1) {
+// fasteners per end face (one, on short walls).
+module wall_straight(units = 1, opening = OPENING, decor = DECOR) {
     h  = wall_h();
     wt = wall_t();
     len = grid(units);
-    assert(OPENING == "none" ||
-           opening_width() + 2 * (WALL_TAB_DEPTH + 2) <= len,
+    assert(opening == "none" ||
+           opening_width(opening) + 2 * (WALL_TAB_DEPTH + 2) <= len,
            str("opening too wide for a ", units, "-unit wall"));
-    assert(OPENING == "none" || opening_top() <= h - scaled(4),
+    assert(opening == "none" || opening_top(opening) <= h - scaled(4),
            "opening too tall for this wall height");
-    assert(OPENING == "none" || DECOR == "none",
-           "one feature per wall: OPENING or DECOR, not both");
+    assert(opening == "none" || decor == "none",
+           "one feature per wall: opening or decor, not both");
     union() {
-        decor_add(len / 2);
+        decor_add(len / 2, decor);
         difference() {
             union() {
                 translate([0, -wt / 2, 0]) cube([len, wt, h]);
@@ -166,10 +183,10 @@ module wall_straight(units = 1) {
                 translate([len, 0, 0]) mirror([1, 0, 0])
                     edge_fastener(z);
             }
-            opening_void(len / 2);
-            decor_cut(len / 2);
+            opening_void(len / 2, opening);
+            decor_cut(len / 2, decor);
         }
-        opening_bars(len / 2);
+        opening_bars(len / 2, opening);
     }
 }
 
@@ -184,97 +201,6 @@ function wall_fastener_heights() =
 module foot_rail(len) {
     translate([0, -FOOT_W / 2, -FOOT_H])
         cube([len, FOOT_W, FOOT_H + EPS]);
-}
-
-// ---------------------------------------------------------------------
-// Openings (Phase 2). Profiles are drawn in 2D (x = along wall,
-// y = height) and extruded through the wall thickness.
-
-function opening_width() =
-    (OPENING == "door_arch" || OPENING == "door_rect" ||
-     OPENING == "door_portcullis") ? scaled(DOOR_W) :
-    OPENING == "window_slit" ? scaled(SLIT_W * SLIT_SPLAY) :
-    OPENING == "none" ? 0 : scaled(WIN_W);
-
-function opening_top() =
-    (OPENING == "door_arch" || OPENING == "door_rect" ||
-     OPENING == "door_portcullis") ? scaled(DOOR_H) :
-    OPENING == "window_slit" ? scaled(SLIT_SILL + SLIT_H) + 2 :
-    OPENING == "none" ? 0 : scaled(WIN_SILL + WIN_H);
-
-// Extrude a 2D child profile through the wall thickness at length
-// position cx.
-module thru_wall(cx) {
-    translate([cx, wall_t() / 2 + EPS, 0])
-        rotate([90, 0, 0])
-            linear_extrude(height = wall_t() + 2 * EPS)
-                children();
-}
-
-module profile_rect(w, h, sill = 0) {
-    translate([-w / 2, sill]) square([w, h]);
-}
-
-// Rectangle capped with an elliptical arch; total height h incl. rise.
-module profile_arch(w, h, rise, sill = 0) {
-    translate([-w / 2, sill]) square([w, max(h - rise, EPS)]);
-    translate([0, sill + h - rise])
-        scale([1, rise / (w / 2)])
-            intersection() {
-                circle(d = w);
-                translate([-w / 2, 0]) square([w, w / 2]);
-            }
-}
-
-module opening_void(cx) {
-    if (OPENING == "door_rect" || OPENING == "door_portcullis")
-        thru_wall(cx) profile_rect(scaled(DOOR_W), scaled(DOOR_H), -EPS);
-    if (OPENING == "door_arch")
-        thru_wall(cx) profile_arch(scaled(DOOR_W), scaled(DOOR_H),
-                                   scaled(ARCH_RISE), -EPS);
-    if (OPENING == "window_barred")
-        thru_wall(cx) profile_rect(scaled(WIN_W), scaled(WIN_H),
-                                   scaled(WIN_SILL));
-    if (OPENING == "window_arch")
-        thru_wall(cx) profile_arch(scaled(WIN_W), scaled(WIN_H),
-                                   scaled(WIN_ARCH_RISE),
-                                   scaled(WIN_SILL));
-    if (OPENING == "window_slit") slit_void(cx);
-}
-
-// Arrow slit: narrow on the +Y (exterior) face, splayed embrasure
-// opening toward -Y (interior).
-module slit_void(cx) {
-    wt = wall_t();
-    hull() {
-        translate([cx - scaled(SLIT_W) / 2, wt / 2 - 0.6,
-                   scaled(SLIT_SILL)])
-            cube([scaled(SLIT_W), 0.6 + EPS, scaled(SLIT_H)]);
-        translate([cx - scaled(SLIT_W * SLIT_SPLAY) / 2, -wt / 2 - EPS,
-                   scaled(SLIT_SILL) - 2])
-            cube([scaled(SLIT_W * SLIT_SPLAY), 0.6,
-                  scaled(SLIT_H) + 4]);
-    }
-}
-
-// Bars left standing in portcullis doors and barred windows. Unioned
-// after the void is cut; they anchor by overlapping the wall above
-// (and below, for windows) the opening.
-// Bar x-offsets, symmetric about the opening center.
-function bar_offsets(w) =
-    let (n = floor((w - scaled(BAR_SIZE)) / scaled(BAR_PITCH)))
-    [for (i = [0 : 1 : n - 1]) (i - (n - 1) / 2) * scaled(BAR_PITCH)];
-
-module opening_bars(cx) {
-    bs = scaled(BAR_SIZE);
-    if (OPENING == "door_portcullis")
-        for (x = bar_offsets(scaled(DOOR_W)))
-            translate([cx + x - bs / 2, -bs / 2, 0])
-                cube([bs, bs, scaled(DOOR_H) + 2]);
-    if (OPENING == "window_barred")
-        for (x = bar_offsets(scaled(WIN_W)))
-            translate([cx + x, 0, scaled(WIN_SILL) - 2])
-                cylinder(h = scaled(WIN_H) + 4, d = bs);
 }
 
 // ---------------------------------------------------------------------
@@ -318,35 +244,149 @@ module wall_corner(mirrored = false) {
 }
 
 // ---------------------------------------------------------------------
-// Phase 3: mosaic centerpiece tiles.
-// A floor tile with a pattern etched into the top face. ETCH_DEPTH
-// (scaled): ~0.6 reads as a painting guide, ~1.2 as shadow relief,
-// 0 disables etching entirely. Stroke widths are absolute so fine
-// lines stay printable at any kit scale.
+// Openings. Profiles are drawn in 2D (x = along wall, y = height) and
+// extruded through the wall thickness.
 
-// MOSAIC: "none" | "compass" | "shield" | "knotwork" | "blank"
-// ("blank" etches only the border ring, for custom painting).
-MOSAIC     = "none";
-ETCH_DEPTH = 0.6;
+function opening_width(opening = OPENING) =
+    (opening == "door_arch" || opening == "door_rect" ||
+     opening == "door_portcullis") ? scaled(DOOR_W) :
+    opening == "window_slit" ? scaled(SLIT_W * SLIT_SPLAY) :
+    opening == "none" ? 0 : scaled(WIN_W);
 
-// Centerpiece tiles keep their perimeter grooves but skip interior
-// wall channels — the pattern is meant to be open floor.
-module mosaic_tile(w = 2, l = 2) {
-    difference() {
-        floor_tile(w, l, interior_grooves = false);
-        if (scaled(ETCH_DEPTH) > 0 && MOSAIC != "none")
-            translate([grid(w) / 2, grid(l) / 2,
-                       floor_t() - scaled(ETCH_DEPTH)])
-                linear_extrude(height = scaled(ETCH_DEPTH) + EPS)
-                    mosaic_pattern(min(grid(w), grid(l)) / 2 - 5);
+function opening_top(opening = OPENING) =
+    (opening == "door_arch" || opening == "door_rect" ||
+     opening == "door_portcullis") ? scaled(DOOR_H) :
+    opening == "window_slit" ? scaled(SLIT_SILL + SLIT_H) + 2 :
+    opening == "none" ? 0 : scaled(WIN_SILL + WIN_H);
+
+// Extrude a 2D child profile through the wall thickness at length
+// position cx.
+module thru_wall(cx) {
+    translate([cx, wall_t() / 2 + EPS, 0])
+        rotate([90, 0, 0])
+            linear_extrude(height = wall_t() + 2 * EPS)
+                children();
+}
+
+module profile_rect(w, h, sill = 0) {
+    translate([-w / 2, sill]) square([w, h]);
+}
+
+// Rectangle capped with an elliptical arch; total height h incl. rise.
+module profile_arch(w, h, rise, sill = 0) {
+    translate([-w / 2, sill]) square([w, max(h - rise, EPS)]);
+    translate([0, sill + h - rise])
+        scale([1, rise / (w / 2)])
+            intersection() {
+                circle(d = w);
+                translate([-w / 2, 0]) square([w, w / 2]);
+            }
+}
+
+module opening_void(cx, opening = OPENING) {
+    if (opening == "door_rect" || opening == "door_portcullis")
+        thru_wall(cx) profile_rect(scaled(DOOR_W), scaled(DOOR_H), -EPS);
+    if (opening == "door_arch")
+        thru_wall(cx) profile_arch(scaled(DOOR_W), scaled(DOOR_H),
+                                   scaled(ARCH_RISE), -EPS);
+    if (opening == "window_barred")
+        thru_wall(cx) profile_rect(scaled(WIN_W), scaled(WIN_H),
+                                   scaled(WIN_SILL));
+    if (opening == "window_arch")
+        thru_wall(cx) profile_arch(scaled(WIN_W), scaled(WIN_H),
+                                   scaled(WIN_ARCH_RISE),
+                                   scaled(WIN_SILL));
+    if (opening == "window_slit") slit_void(cx);
+}
+
+// Arrow slit: narrow on the +Y (exterior) face, splayed embrasure
+// opening toward -Y (interior).
+module slit_void(cx) {
+    wt = wall_t();
+    hull() {
+        translate([cx - scaled(SLIT_W) / 2, wt / 2 - 0.6,
+                   scaled(SLIT_SILL)])
+            cube([scaled(SLIT_W), 0.6 + EPS, scaled(SLIT_H)]);
+        translate([cx - scaled(SLIT_W * SLIT_SPLAY) / 2, -wt / 2 - EPS,
+                   scaled(SLIT_SILL) - 2])
+            cube([scaled(SLIT_W * SLIT_SPLAY), 0.6,
+                  scaled(SLIT_H) + 4]);
     }
 }
 
-module mosaic_pattern(R) {
-    if (MOSAIC == "compass")  compass_rose_2d(R);
-    if (MOSAIC == "shield")   shield_2d(R);
-    if (MOSAIC == "knotwork") knot_2d(R);
-    if (MOSAIC == "blank")    ring_2d(R);
+// Bar x-offsets, symmetric about the opening center.
+function bar_offsets(w) =
+    let (n = floor((w - scaled(BAR_SIZE)) / scaled(BAR_PITCH)))
+    [for (i = [0 : 1 : n - 1]) (i - (n - 1) / 2) * scaled(BAR_PITCH)];
+
+// Bars left standing in portcullis doors and barred windows. Unioned
+// after the void is cut; they anchor by overlapping the wall above
+// (and below, for windows) the opening.
+module opening_bars(cx, opening = OPENING) {
+    bs = scaled(BAR_SIZE);
+    if (opening == "door_portcullis")
+        for (x = bar_offsets(scaled(DOOR_W)))
+            translate([cx + x - bs / 2, -bs / 2, 0])
+                cube([bs, bs, scaled(DOOR_H) + 2]);
+    if (opening == "window_barred")
+        for (x = bar_offsets(scaled(WIN_W)))
+            translate([cx + x, 0, scaled(WIN_SILL) - 2])
+                cylinder(h = scaled(WIN_H) + 4, d = bs);
+}
+
+// ---------------------------------------------------------------------
+// Decorative wall features. One feature per wall; walls print lying
+// flat so pegs are printable.
+
+module decor_cut(cx, decor = DECOR) {
+    wt = wall_t();
+    z  = DECOR_H_FRAC * wall_h();
+    // Torch socket: bore into the -Y face, tilted 25 degrees up, so a
+    // torch stem leans out over the room.
+    if (decor == "sconce")
+        translate([cx, -wt / 2 - EPS, z])
+            rotate([-65, 0, 0])
+                cylinder(h = wt + 4, d = SCONCE_D + fit_clearance());
+    // Gargoyle glue pocket on the +Y (exterior) face near the top.
+    if (decor == "gargoyle_socket")
+        translate([cx - 3, wt / 2 - 4, wall_h() - 10])
+            cube([6, 4 + EPS, 6]);
+}
+
+module decor_add(cx, decor = DECOR) {
+    wt = wall_t();
+    z  = DECOR_H_FRAC * wall_h();
+    // Banner peg out of the -Y face with a retaining tip.
+    if (decor == "banner_peg") {
+        translate([cx, -wt / 2 + EPS, z])
+            rotate([90, 0, 0]) cylinder(h = 5 + EPS, d = PEG_D);
+        translate([cx, -wt / 2 - 5, z]) sphere(d = PEG_D + 1.5);
+    }
+}
+
+// ---------------------------------------------------------------------
+// Mosaic centerpiece tiles: a floor tile with a pattern etched into
+// the top face. Stroke widths are absolute so fine lines stay
+// printable at any kit scale. Centerpiece tiles keep their perimeter
+// grooves but skip interior wall channels — the pattern is meant to
+// be open floor.
+module mosaic_tile(w = 2, l = 2, mosaic = MOSAIC, etch = ETCH_DEPTH) {
+    difference() {
+        floor_tile(w, l, interior_grooves = false);
+        if (scaled(etch) > 0 && mosaic != "none")
+            translate([grid(w) / 2, grid(l) / 2,
+                       floor_t() - scaled(etch)])
+                linear_extrude(height = scaled(etch) + EPS)
+                    mosaic_pattern(min(grid(w), grid(l)) / 2 - 5,
+                                   mosaic);
+    }
+}
+
+module mosaic_pattern(R, mosaic = MOSAIC) {
+    if (mosaic == "compass")  compass_rose_2d(R);
+    if (mosaic == "shield")   shield_2d(R);
+    if (mosaic == "knotwork") knot_2d(R);
+    if (mosaic == "blank")    ring_2d(R);
 }
 
 module ring_2d(R, w = 1.2) {
@@ -403,42 +443,5 @@ module knot_2d(R) {
             rotate(-45) translate([k * 6, 0])
                 square([1.4, 4 * R], center = true);
         }
-    }
-}
-
-// ---------------------------------------------------------------------
-// Phase 3: decorative wall features.
-// DECOR: "none" | "sconce" (angled torch socket, interior face) |
-//        "banner_peg" (rod peg with retaining tip, interior face) |
-//        "gargoyle_socket" (glue pocket, exterior face near top)
-// One feature per wall; walls print lying flat so pegs are printable.
-DECOR        = "none";
-DECOR_H_FRAC = 0.72;
-SCONCE_D     = 4;      // torch stem diameter (absolute, fit)
-PEG_D        = 3;
-
-module decor_cut(cx) {
-    wt = wall_t();
-    z  = DECOR_H_FRAC * wall_h();
-    // Torch socket: bore into the -Y face, tilted 25 degrees up, so a
-    // torch stem leans out over the room.
-    if (DECOR == "sconce")
-        translate([cx, -wt / 2 - EPS, z])
-            rotate([-65, 0, 0])
-                cylinder(h = wt + 4, d = SCONCE_D + fit_clearance());
-    // Gargoyle glue pocket on the +Y (exterior) face near the top.
-    if (DECOR == "gargoyle_socket")
-        translate([cx - 3, wt / 2 - 4, wall_h() - 10])
-            cube([6, 4 + EPS, 6]);
-}
-
-module decor_add(cx) {
-    wt = wall_t();
-    z  = DECOR_H_FRAC * wall_h();
-    // Banner peg out of the -Y face with a retaining tip.
-    if (DECOR == "banner_peg") {
-        translate([cx, -wt / 2 + EPS, z])
-            rotate([90, 0, 0]) cylinder(h = 5 + EPS, d = PEG_D);
-        translate([cx, -wt / 2 - 5, z]) sphere(d = PEG_D + 1.5);
     }
 }

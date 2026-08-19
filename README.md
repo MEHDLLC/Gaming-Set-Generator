@@ -43,15 +43,31 @@ Tab gender convention: floors are male on +X/+Y edges, female on
 -X/-Y; wall chains alternate male-into-female, and corners pass the
 chain through (male out one arm, female in the other).
 
+## Kits (Phase 4)
+
+Pieces are organized into **kits** — matched sets defined in
+`config/kits/*.json`. A kit's `shared` block (connector type, fit,
+magnet size) is merged into every piece and pieces cannot override it,
+so everything in a kit mates by construction. Style slots (door,
+window, mosaic, decor) are picked deterministically from the kit's
+`seed` — change the seed to **reroll a whole matching kit** — or
+pinned explicitly in `styles`. Each kit renders to
+`generated/<kit_id>/` along with iso + top-down preview thumbnails.
+
+Current kits: `stonebound_keep` (tab & slot, seed 42),
+`lodestone_vault` (5x2mm magnets, seed 7), plus the `calibration`
+coupon set.
+
 ## Layout
 
 ```
 src/lib/        shared OpenSCAD libraries (grid, connectors, pieces)
 src/pieces/     one entry .scad per piece type
-config/         build manifest: pieces, parameter sets, fit tests
-scripts/        build.py — render, validate mesh, emit descriptions
-tests/          fit_test.scad — boolean-intersection snap-fit checks
-generated/      output .stl + .txt (rebuilt by CI)
+config/kits/    kit definitions (shared params, seed, piece list)
+config/fit_tests.json  snap-fit test matrix
+scripts/        build.py — render, validate, describe, preview
+tests/          fit_test.scad, kit_preview.scad
+generated/      output per kit: .stl + .txt + preview .png (CI-built)
 ```
 
 ## Build locally
@@ -61,7 +77,7 @@ sudo apt-get install openscad
 python3 scripts/build.py
 ```
 
-Renders every piece in `config/build_manifest.json` into `generated/`,
+Renders every kit in `config/kits/` into `generated/<kit_id>/`,
 runs mesh QA (non-empty, no degenerate faces, manifold), writes a
 matching `.txt` description per STL, then runs the snap-fit tests:
 each mated piece pair is boolean-intersected and must produce zero
