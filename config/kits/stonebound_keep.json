@@ -150,6 +150,40 @@
       "piece_type": "staircase (1x2)",
       "style": "{texture}, 8 steps to wall height",
       "extra": "42-degree climb"
+    },
+    {
+      "name": "column",
+      "scad": "src/pieces/column.scad",
+      "params": {},
+      "piece_type": "storey column",
+      "style": "cross-tenon, snaps into floor and deck channels",
+      "extra": "wall-height, grid-intersection mount"
+    },
+    {
+      "name": "deck_2x2",
+      "scad": "src/pieces/deck_tile.scad",
+      "params": {
+        "DECK_W": 2,
+        "DECK_L": 2
+      },
+      "piece_type": "upper-floor deck tile (2x2)",
+      "style": "{texture} floor, grooved both faces",
+      "extra": "rests on wall tops, stacks storeys"
+    },
+    {
+      "name": "deck_2x2_stairwell",
+      "scad": "src/pieces/deck_tile.scad",
+      "params": {
+        "DECK_W": 2,
+        "DECK_L": 2,
+        "DECK_HOLE_X": 1,
+        "DECK_HOLE_Y": 0,
+        "DECK_HOLE_W": 1,
+        "DECK_HOLE_L": 2
+      },
+      "piece_type": "stairwell deck tile (2x2, 1x2 opening)",
+      "style": "{texture} floor, grooved both faces",
+      "extra": "opening admits the staircase"
     }
   ]
 }

@@ -1,9 +1,11 @@
 name,piece_type,file,triangles,bbox_x_mm,bbox_y_mm,bbox_z_mm,solid_volume_cm3,solid_pla_g,magnets_needed
 floor_1x1,floor tile (1x1),floor_1x1.stl,2196,25.4,25.4,7.4,4.31,5.3,4
-wall_1u,straight wall (1 unit),wall_1u.stl,2240,25.4,7.4,52.2,9.21,11.4,4
-wall_corner_r,90-degree corner wall,wall_corner_r.stl,4404,29.1,29.1,52.2,18.45,22.9,4
-wall_door,doorway wall (2 units),wall_door.stl,3544,50.8,7.4,52.2,14.16,17.6,4
-wall_window,window wall (1 unit),wall_window.stl,3096,25.4,7.4,52.2,8.41,10.4,4
+wall_1u,straight wall (1 unit),wall_1u.stl,2256,25.4,7.4,53.6,9.32,11.6,4
+wall_corner_r,90-degree corner wall,wall_corner_r.stl,4428,29.1,29.1,53.6,18.66,23.1,4
+wall_door,doorway wall (2 units),wall_door.stl,3560,50.8,7.4,53.6,14.37,17.8,4
+wall_window,window wall (1 unit),wall_window.stl,3112,25.4,7.4,53.6,8.52,10.6,4
 mosaic_center,mosaic centerpiece tile (2x2),mosaic_center.stl,5476,50.8,50.8,7.4,18.14,22.5,4
-stairs_1x2,staircase (1x2),stairs_1x2.stl,4128,25.4,50.8,50.8,40.37,50.1,0
-# kit totals: 7 pieces, 140g solid PLA, 24 magnets (5x2mm)
+stairs_1x2,staircase (1x2),stairs_1x2.stl,4660,25.4,50.8,67.2,51.92,64.4,0
+column,storey column,column.stl,352,16.0,16.0,53.6,2.87,3.6,0
+deck_2x2,upper-floor deck tile (2x2),deck_2x2.stl,4120,50.8,50.8,9.0,20.64,25.6,0
+# kit totals: 9 pieces, 184g solid PLA, 24 magnets (5x2mm)

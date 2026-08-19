@@ -60,6 +60,7 @@ ETCH_DEPTH = 0.6;   // scaled; ~0.6 painting guide, ~1.2 shadow relief
 // multi-cell tiles). Two adjacent tiles each contribute half the
 // channel. Fit-critical -> absolute mm.
 WALL_FOOT     = true;
+WALL_TOP_RAIL = true;   // same rail on top: registers ceiling decks
 FLOOR_GROOVES = true;
 FOOT_W        = 3;
 FOOT_H        = 1.4;
@@ -188,6 +189,8 @@ module wall_straight(units = 1, opening = OPENING, decor = DECOR) {
                         tab_male(h, WALL_TAB_NECK, WALL_TAB_HEAD,
                                  WALL_TAB_DEPTH);
                 if (WALL_FOOT) foot_rail(len);
+                if (WALL_TOP_RAIL) translate([0, 0, h])
+                    mirror([0, 0, 1]) foot_rail(len);
             }
             if (CONNECTOR == "tab")
                 tab_female(h, fit_clearance(), WALL_TAB_NECK,
@@ -251,6 +254,13 @@ module wall_corner(mirrored = false) {
                     translate([0, -FOOT_W / 2, 0]) rotate([0, 0, 90])
                         foot_rail(grid(1) + FOOT_W / 2);
                 }
+                if (WALL_TOP_RAIL) translate([0, 0, h])
+                    mirror([0, 0, 1]) {
+                        translate([-FOOT_W / 2, 0, 0])
+                            foot_rail(grid(1) + FOOT_W / 2);
+                        translate([0, -FOOT_W / 2, 0]) rotate([0, 0, 90])
+                            foot_rail(grid(1) + FOOT_W / 2);
+                    }
                 if (CONNECTOR == "tab")
                     translate([grid(1), 0, 0])
                         tab_male(h, WALL_TAB_NECK, WALL_TAB_HEAD,
@@ -546,9 +556,9 @@ module wall_texture_cuts(len, seed) {
 }
 
 // Flagstone-style cuts into a floor tile's top face.
-module floor_texture_cuts(w, l, seed) {
+module floor_texture_cuts(w, l, seed, t = floor_t()) {
     if (TEXTURE != "none")
-        translate([0, grid(l), floor_t()]) rotate([90, 0, 0])
+        translate([0, grid(l), t]) rotate([90, 0, 0])
             masonry_face(grid(w), grid(l), seed + 2, 2);
 }
 
@@ -561,7 +571,9 @@ module floor_texture_cuts(w, l, seed) {
 module stairs_straight(w = 1, l = 2) {
     t = floor_t();
     n = 4 * l;
-    rise = (wall_h() - t) / n;
+    // Top step lands flush with the surface of a deck tile resting on
+    // the wall tops: wall height + deck thickness above this base.
+    rise = (wall_h() + t + FOOT_GROOVE_D) / n;
     going = grid(l) / n;
     difference() {
         union() {
@@ -584,6 +596,10 @@ module stairs_straight(w = 1, l = 2) {
                 masonry_face(grid(l), wall_h(), TEXTURE_SEED + 8, 2);
             translate([grid(w), grid(l), 0]) rotate([0, 0, -90])
                 masonry_face(grid(l), wall_h(), TEXTURE_SEED + 9, 2);
+            // tall back face under the top landing
+            translate([0, grid(l), 0])
+                masonry_face(grid(w), wall_h() + floor_t()
+                             + FOOT_GROOVE_D, TEXTURE_SEED + 10, 2);
         }
         if (PART_ID != "")
             translate([grid(w) / 2, grid(l) / 2, -EPS])
@@ -593,4 +609,98 @@ module stairs_straight(w = 1, l = 2) {
                              valign = "center",
                              font = "Liberation Sans:style=Bold");
     }
+}
+
+// ---------------------------------------------------------------------
+// Multi-storey system.
+//
+// Vertical stack convention (relative to a ground floor at z = 0):
+//   floor surface      z = floor_t()
+//   wall tops          z = floor_t() + wall_h()
+//   deck tile rests on the wall tops; its top grooves accept the next
+//   storey's walls, so storeys stack indefinitely.
+//
+// Deck tile: an upper floor / ceiling plate with groove channels on
+// BOTH faces — underside channels drop onto wall top rails and column
+// tenons, top channels take the next storey's wall feet. Thicker than
+// a ground floor so tabs and the mid-web survive both groove cuts.
+// Optional stairwell hole: hw x hl grid cells starting at cell
+// (hx, hy).
+module deck_tile(w = 2, l = 2, hx = 0, hy = 0, hw = 0, hl = 0) {
+    t = floor_t() + FOOT_GROOVE_D;
+    tab_t = t - 2 * FOOT_GROOVE_D;
+    difference() {
+        union() {
+            cube([grid(w), grid(l), t]);
+            if (CONNECTOR == "tab") {
+                for (j = [0 : l - 1])
+                    translate([grid(w), grid(j + 0.5), FOOT_GROOVE_D])
+                        tab_male(tab_t);
+                for (i = [0 : w - 1])
+                    translate([grid(i + 0.5), grid(l), FOOT_GROOVE_D])
+                        rotate([0, 0, 90]) tab_male(tab_t);
+            }
+        }
+        floor_grooves(w, l, t, true);
+        translate([0, 0, t]) mirror([0, 0, 1])
+            floor_grooves(w, l, t, true);
+        floor_texture_cuts(w, l, TEXTURE_SEED + 4, t);
+        if (CONNECTOR == "tab") {
+            for (j = [0 : l - 1])
+                translate([0, grid(j + 0.5), 0]) tab_female(t);
+            for (i = [0 : w - 1])
+                translate([grid(i + 0.5), 0, 0])
+                    rotate([0, 0, 90]) tab_female(t);
+        }
+        if (CONNECTOR == "magnet" || CONNECTOR == "dowel") {
+            for (j = [0 : l - 1]) {
+                translate([0, grid(j + 0.5), 0]) edge_fastener(t / 2);
+                translate([grid(w), grid(j + 0.5), 0])
+                    mirror([1, 0, 0]) edge_fastener(t / 2);
+            }
+            for (i = [0 : w - 1]) {
+                translate([grid(i + 0.5), 0, 0])
+                    rotate([0, 0, 90]) edge_fastener(t / 2);
+                translate([grid(i + 0.5), grid(l), 0])
+                    mirror([0, 1, 0]) rotate([0, 0, 90])
+                        edge_fastener(t / 2);
+            }
+        }
+        if (hw > 0 && hl > 0)
+            translate([grid(hx), grid(hy), -EPS])
+                cube([grid(hw), grid(hl), t + 2 * EPS]);
+        if (PART_ID != "")
+            translate([grid(0.5), grid(0.5), -EPS])
+                linear_extrude(height = 0.4 + EPS)
+                    mirror([1, 0, 0])
+                        text(PART_ID, size = 2.0, halign = "center",
+                             valign = "center",
+                             font = "Liberation Sans:style=Bold");
+    }
+}
+
+// ---------------------------------------------------------------------
+// Column: stands on a floor at a grid-line INTERSECTION — where four
+// groove channels cross — and carries a deck corner above. Cross-
+// shaped tenons on both ends drop into those existing channel
+// crossings, so no new sockets are needed anywhere. Height equals the
+// wall height: floor surface to deck underside.
+COLUMN_D     = 7.5;   // shaft diameter (scaled)
+COLUMN_PLATE = 11;    // base/capital plate size (scaled)
+
+module cross_tenon() {
+    for (a = [0, 90]) rotate([0, 0, a])
+        translate([-8, -FOOT_W / 2, 0])
+            cube([16, FOOT_W, FOOT_H]);
+}
+
+module column() {
+    h  = wall_h();
+    pl = scaled(COLUMN_PLATE);
+    translate([0, 0, -FOOT_H]) cross_tenon();
+    translate([0, 0, h]) cross_tenon();
+    translate([-pl / 2, -pl / 2, 0]) cube([pl, pl, scaled(2.5)]);
+    translate([-pl / 2, -pl / 2, h - scaled(2.5)])
+        cube([pl, pl, scaled(2.5)]);
+    cylinder(h = h, d = scaled(COLUMN_D));
 }

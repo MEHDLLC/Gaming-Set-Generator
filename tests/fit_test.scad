@@ -12,7 +12,8 @@ TEST = "floor_x";
 // A typo'd TEST would intersect two empty modules and false-pass.
 valid = ["floor_x", "floor_y", "wall_wall", "corner_male",
          "corner_female", "wall_on_floor", "wall_on_floor_interior",
-         "stairs_on_floor"];
+         "stairs_on_floor", "column_on_floor", "deck_on_wall",
+         "column_to_deck"];
 assert(len([for (v = valid) if (v == TEST) v]) == 1,
        str("unknown TEST: ", TEST));
 
@@ -28,6 +29,15 @@ module piece_a() {
     // Stairs' low edge butts the floor tile's +Y male edge.
     else if (TEST == "stairs_on_floor")
         translate([0, grid(1), 0]) stairs_straight(1, 2);
+    // Column tenons at a four-tile channel crossing (below) and a
+    // four-deck corner (above).
+    else if (TEST == "column_on_floor")
+        translate([grid(1), grid(1), floor_t()]) column();
+    else if (TEST == "column_to_deck")
+        translate([grid(1), grid(1), 0]) column();
+    // Wall standing under the shared edge of two deck tiles.
+    else if (TEST == "deck_on_wall")
+        translate([0, grid(1), 0]) wall_straight(1);
 }
 
 module piece_b() {
@@ -51,6 +61,16 @@ module piece_b() {
         floor_tile(2, 2);
     else if (TEST == "stairs_on_floor")
         floor_tile(1, 1);
+    else if (TEST == "column_on_floor")
+        for (i = [0 : 1], j = [0 : 1])
+            translate([grid(i), grid(j), 0]) floor_tile(1, 1);
+    else if (TEST == "column_to_deck")
+        for (i = [0 : 1], j = [0 : 1])
+            translate([grid(i), grid(j), wall_h()]) deck_tile(1, 1);
+    else if (TEST == "deck_on_wall") {
+        translate([0, 0, wall_h()]) deck_tile(1, 1);
+        translate([0, grid(1), wall_h()]) deck_tile(1, 1);
+    }
 }
 
 intersection() {

@@ -26,7 +26,9 @@ and shipped as a matching `.stl` + `.txt` description pair.
 | `wall_straight` | any length; heights: parapet (1u) / standard (2u) / tower (3u); openings below |
 | `wall_corner` | 90°, right/left-handed (tab chains are chiral) |
 | `mosaic_tile` | centerpiece floor: compass rose, heraldic shield, knotwork lattice, or blank ring; `ETCH_DEPTH` 0.6 = painting guide, 1.2 = shadow relief |
-| `stairs_straight` | staircase on a floor-tile footprint, 4 steps per grid unit of run, rises to wall-top height |
+| `stairs_straight` | staircase on a floor-tile footprint, 4 steps per grid unit of run, lands flush with the next storey's deck surface |
+| `deck_tile` | upper floor / ceiling plate, groove channels on BOTH faces; optional stairwell opening |
+| `column` | storey-height column; cross tenons snap into the groove-channel crossings of the floor below and deck above |
 
 Wall openings (`OPENING` parameter): `door_arch`, `door_rect`,
 `door_portcullis` (2-unit walls), `window_slit` (splayed embrasure),
@@ -47,6 +49,13 @@ ends. Texture is a seeded kit style slot like doors and windows.
 Floors fill grid cells; walls run along grid lines, centered on them.
 Walls carry a tenon rail underfoot that drops into the floor groove
 channel, registering wall lines to the grid (print walls lying flat).
+
+**Storeys stack.** Walls carry the same rail on top; a deck tile's
+underside grooves drop onto the wall tops (and onto column tenons),
+and its top grooves accept the next storey's walls — so levels stack
+indefinitely with no extra connector types. Columns stand at grid
+intersections, where four groove channels already cross. Stack pitch:
+`floor_t + wall_h` per storey.
 Tab gender convention: floors are male on +X/+Y edges, female on
 -X/-Y; wall chains alternate male-into-female, and corners pass the
 chain through (male out one arm, female in the other).

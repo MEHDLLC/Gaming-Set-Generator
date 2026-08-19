@@ -63,5 +63,26 @@
       "TEXTURE": "ashlar",
       "TEXTURE_SEED": 42
     }
+  },
+  {
+    "name": "column_on_floor",
+    "params": {
+      "TEST": "column_on_floor",
+      "CONNECTOR": "tab"
+    }
+  },
+  {
+    "name": "deck_on_wall",
+    "params": {
+      "TEST": "deck_on_wall",
+      "CONNECTOR": "tab"
+    }
+  },
+  {
+    "name": "column_to_deck",
+    "params": {
+      "TEST": "column_to_deck",
+      "CONNECTOR": "tab"
+    }
   }
 ]

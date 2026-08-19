@@ -169,6 +169,10 @@ def suggest_tags(piece, params):
     scad = piece["scad"]
     if "stairs" in scad:
         tags += ["dungeon stairs", "castle stairs"]
+    elif "column" in scad:
+        tags += ["stone column", "pillar", "multi level"]
+    elif "deck_tile" in scad:
+        tags += ["second floor", "multi level", "dnd tiles"]
     elif "floor_tile" in scad:
         tags += ["dungeon floor tile", "dnd tiles"]
     elif "mosaic" in scad:
@@ -209,8 +213,11 @@ def resolve(value, styles):
 def render_scad(out_path, scad_path, params, png_camera=None):
     cmd = ["openscad", "-o", str(out_path)]
     if png_camera:
+        # --render: full CGAL evaluation. The OpenCSG preview path
+        # aborts normalization (empty image) on texture-heavy scenes.
         cmd = (["xvfb-run", "-a"] + cmd
-               + ["--imgsize=1000,750", f"--camera={png_camera}"])
+               + ["--render", "--imgsize=1000,750",
+                  f"--camera={png_camera}"])
     for k, v in params.items():
         cmd += ["-D", f"{k}={scad_value(v)}"]
     cmd.append(str(scad_path))
@@ -354,7 +361,7 @@ def render_previews(kit, styles, kit_dir, failures):
         **kit.get("shared", {}),
     }
     views = {
-        "preview_iso": "51,51,25,55,0,200,330",
+        "preview_iso": "51,51,25,55,0,110,330",
         "preview_top": "51,51,0,0,0,0,300",
     }
     for name, cam in views.items():
