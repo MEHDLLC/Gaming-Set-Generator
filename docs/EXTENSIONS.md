@@ -234,9 +234,9 @@ Check your marketplace's per-file size and file-count limits before designing th
 bundle step — digital listings are usually capped, and a full kit will exceed a
 naive single-zip approach.
 
-> Minor: the fixed closing line in the Phase 5 template reads
-> "Hit me up if you'd something custom!" — missing a word. Since it's hard-coded
-> into every generated file, worth fixing before the first batch ships.
+> Note: the Phase 5 template's closing line originally read "Hit me up if you'd
+> something custom!" — fixed to "if you'd like something custom!" in
+> `scripts/build.py`, the single source of truth for the template.
 
 ---
 

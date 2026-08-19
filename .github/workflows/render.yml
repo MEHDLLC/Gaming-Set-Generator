@@ -1,0 +1,41 @@
+name: Render STLs
+
+on:
+  push:
+    paths:
+      - "src/**"
+      - "config/**"
+      - "scripts/**"
+      - ".github/workflows/render.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install OpenSCAD
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends openscad
+
+      - name: Render, validate, and describe all pieces
+        run: python3 scripts/build.py
+
+      - name: Upload STL + txt bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: stl-bundle
+          path: generated/
+
+      - name: Commit generated files back to branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add generated/
+          if ! git diff --cached --quiet; then
+            git commit -m "CI: regenerate STL + txt outputs [skip ci]"
+            git push
+          fi
