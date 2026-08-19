@@ -329,6 +329,134 @@
         "connector_type": "vertical dovetail tab & slot",
         "param_summary": "GRID_UNIT 25.4mm, 3-unit height, FIT normal"
       }
+    },
+    {
+      "name": "mosaic_2x2_compass_tab",
+      "scad": "src/pieces/mosaic_tile.scad",
+      "params": {
+        "CONNECTOR": "tab",
+        "FIT": "normal",
+        "MOSAIC": "compass",
+        "ETCH_DEPTH": 0.6
+      },
+      "description": {
+        "piece_type": "mosaic centerpiece tile (2x2)",
+        "style": "etched compass rose",
+        "connector_type": "tab & slot",
+        "param_summary": "GRID_UNIT 25.4mm, 0.6mm etch (painting guide)"
+      }
+    },
+    {
+      "name": "mosaic_2x2_compass_deep_tab",
+      "scad": "src/pieces/mosaic_tile.scad",
+      "params": {
+        "CONNECTOR": "tab",
+        "FIT": "normal",
+        "MOSAIC": "compass",
+        "ETCH_DEPTH": 1.2
+      },
+      "description": {
+        "piece_type": "mosaic centerpiece tile (2x2)",
+        "style": "deep-etched compass rose",
+        "connector_type": "tab & slot",
+        "param_summary": "GRID_UNIT 25.4mm, 1.2mm etch (shadow relief)"
+      }
+    },
+    {
+      "name": "mosaic_2x2_shield_tab",
+      "scad": "src/pieces/mosaic_tile.scad",
+      "params": {
+        "CONNECTOR": "tab",
+        "FIT": "normal",
+        "MOSAIC": "shield",
+        "ETCH_DEPTH": 0.6
+      },
+      "description": {
+        "piece_type": "mosaic centerpiece tile (2x2)",
+        "style": "etched heraldic shield with chevron",
+        "connector_type": "tab & slot",
+        "param_summary": "GRID_UNIT 25.4mm, 0.6mm etch (painting guide)"
+      }
+    },
+    {
+      "name": "mosaic_2x2_knotwork_tab",
+      "scad": "src/pieces/mosaic_tile.scad",
+      "params": {
+        "CONNECTOR": "tab",
+        "FIT": "normal",
+        "MOSAIC": "knotwork",
+        "ETCH_DEPTH": 0.6
+      },
+      "description": {
+        "piece_type": "mosaic centerpiece tile (2x2)",
+        "style": "etched geometric lattice knotwork",
+        "connector_type": "tab & slot",
+        "param_summary": "GRID_UNIT 25.4mm, 0.6mm etch (painting guide)"
+      }
+    },
+    {
+      "name": "mosaic_2x2_blank_tab",
+      "scad": "src/pieces/mosaic_tile.scad",
+      "params": {
+        "CONNECTOR": "tab",
+        "FIT": "normal",
+        "MOSAIC": "blank",
+        "ETCH_DEPTH": 0.6
+      },
+      "description": {
+        "piece_type": "mosaic centerpiece tile (2x2)",
+        "style": "border ring only, blank center",
+        "connector_type": "tab & slot",
+        "param_summary": "GRID_UNIT 25.4mm, blank field for custom painting"
+      }
+    },
+    {
+      "name": "wall_1u_sconce_tab",
+      "scad": "src/pieces/wall_straight.scad",
+      "params": {
+        "CONNECTOR": "tab",
+        "FIT": "normal",
+        "WALL_UNITS": 1,
+        "DECOR": "sconce"
+      },
+      "description": {
+        "piece_type": "wall with torch sconce (1 unit)",
+        "style": "angled 4mm torch socket",
+        "connector_type": "vertical dovetail tab & slot",
+        "param_summary": "GRID_UNIT 25.4mm, socket at 72% height, FIT normal"
+      }
+    },
+    {
+      "name": "wall_1u_banner_peg_tab",
+      "scad": "src/pieces/wall_straight.scad",
+      "params": {
+        "CONNECTOR": "tab",
+        "FIT": "normal",
+        "WALL_UNITS": 1,
+        "DECOR": "banner_peg"
+      },
+      "description": {
+        "piece_type": "wall with banner peg (1 unit)",
+        "style": "3mm peg with retaining tip",
+        "connector_type": "vertical dovetail tab & slot",
+        "param_summary": "GRID_UNIT 25.4mm, peg at 72% height, FIT normal"
+      }
+    },
+    {
+      "name": "wall_1u_gargoyle_socket_tab",
+      "scad": "src/pieces/wall_straight.scad",
+      "params": {
+        "CONNECTOR": "tab",
+        "FIT": "normal",
+        "WALL_UNITS": 1,
+        "DECOR": "gargoyle_socket"
+      },
+      "description": {
+        "piece_type": "wall with gargoyle mount (1 unit)",
+        "style": "6x6mm glue socket near top",
+        "connector_type": "vertical dovetail tab & slot",
+        "param_summary": "GRID_UNIT 25.4mm, exterior face socket, FIT normal"
+      }
     }
   ],
   "fit_tests": [

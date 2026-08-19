@@ -25,11 +25,16 @@ and shipped as a matching `.stl` + `.txt` description pair.
 | `floor_tile` | any W x L grid footprint; wall-foot grooves on edges and interior grid lines |
 | `wall_straight` | any length; heights: parapet (1u) / standard (2u) / tower (3u); openings below |
 | `wall_corner` | 90°, right/left-handed (tab chains are chiral) |
+| `mosaic_tile` | centerpiece floor: compass rose, heraldic shield, knotwork lattice, or blank ring; `ETCH_DEPTH` 0.6 = painting guide, 1.2 = shadow relief |
 
 Wall openings (`OPENING` parameter): `door_arch`, `door_rect`,
 `door_portcullis` (2-unit walls), `window_slit` (splayed embrasure),
 `window_arch`, `window_barred` (1-unit walls). Cutout sizes, arch
 rise, sill heights, and bar pitch are all parameters.
+
+Wall decor (`DECOR` parameter, one feature per wall): `sconce`
+(angled torch socket), `banner_peg` (rod peg with retaining tip),
+`gargoyle_socket` (glue pocket for a separately printed figure).
 
 Floors fill grid cells; walls run along grid lines, centered on them.
 Walls carry a tenon rail underfoot that drops into the floor groove

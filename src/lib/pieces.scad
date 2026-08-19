@@ -61,7 +61,7 @@ function wall_h() = grid(WALL_HEIGHT_UNITS);
 // Floor tile: w x l grid cells, one connector centered per grid-square
 // edge segment. Tab gender: male on +X and +Y edges, female on -X and
 // -Y, so identically-oriented tiles tessellate in both directions.
-module floor_tile(w = 1, l = 1) {
+module floor_tile(w = 1, l = 1, interior_grooves = true) {
     t = floor_t();
     // Male tabs stop below the groove floor so a mated neighbor's tab
     // never pokes up into the wall-foot channel.
@@ -77,7 +77,7 @@ module floor_tile(w = 1, l = 1) {
                         rotate([0, 0, 90]) tab_male(tab_t);
             }
         }
-        if (FLOOR_GROOVES) floor_grooves(w, l, t);
+        if (FLOOR_GROOVES) floor_grooves(w, l, t, interior_grooves);
         if (CONNECTOR == "tab") {
             for (j = [0 : l - 1])
                 translate([0, grid(j + 0.5), 0]) tab_female(t);
@@ -104,7 +104,7 @@ module floor_tile(w = 1, l = 1) {
 
 // Half-channel rebates along the tile's top edges plus full channels
 // along interior grid lines, so a wall foot can seat on any grid line.
-module floor_grooves(w, l, t) {
+module floor_grooves(w, l, t, interior = true) {
     gw = (FOOT_W + fit_clearance()) / 2;   // half-channel per tile edge
     gd = FOOT_GROOVE_D;
     translate([-EPS, -EPS, t - gd])
@@ -115,12 +115,14 @@ module floor_grooves(w, l, t) {
         cube([gw + EPS, grid(l) + 2 * EPS, gd + EPS]);
     translate([grid(w) - gw, -EPS, t - gd])
         cube([gw + EPS, grid(l) + 2 * EPS, gd + EPS]);
-    for (i = [1 : 1 : w - 1])
-        translate([grid(i) - gw, -EPS, t - gd])
-            cube([2 * gw, grid(l) + 2 * EPS, gd + EPS]);
-    for (j = [1 : 1 : l - 1])
-        translate([-EPS, grid(j) - gw, t - gd])
-            cube([grid(w) + 2 * EPS, 2 * gw, gd + EPS]);
+    if (interior) {
+        for (i = [1 : 1 : w - 1])
+            translate([grid(i) - gw, -EPS, t - gd])
+                cube([2 * gw, grid(l) + 2 * EPS, gd + EPS]);
+        for (j = [1 : 1 : l - 1])
+            translate([-EPS, grid(j) - gw, t - gd])
+                cube([grid(w) + 2 * EPS, 2 * gw, gd + EPS]);
+    }
 }
 
 // Magnet pocket or dowel hole, per the active CONNECTOR.
@@ -143,7 +145,10 @@ module wall_straight(units = 1) {
            str("opening too wide for a ", units, "-unit wall"));
     assert(OPENING == "none" || opening_top() <= h - scaled(4),
            "opening too tall for this wall height");
+    assert(OPENING == "none" || DECOR == "none",
+           "one feature per wall: OPENING or DECOR, not both");
     union() {
+        decor_add(len / 2);
         difference() {
             union() {
                 translate([0, -wt / 2, 0]) cube([len, wt, h]);
@@ -162,6 +167,7 @@ module wall_straight(units = 1) {
                     edge_fastener(z);
             }
             opening_void(len / 2);
+            decor_cut(len / 2);
         }
         opening_bars(len / 2);
     }
@@ -309,4 +315,130 @@ module wall_corner(mirrored = false) {
                     rotate([0, 0, 90]) edge_fastener(z);
             }
         }
+}
+
+// ---------------------------------------------------------------------
+// Phase 3: mosaic centerpiece tiles.
+// A floor tile with a pattern etched into the top face. ETCH_DEPTH
+// (scaled): ~0.6 reads as a painting guide, ~1.2 as shadow relief,
+// 0 disables etching entirely. Stroke widths are absolute so fine
+// lines stay printable at any kit scale.
+
+// MOSAIC: "none" | "compass" | "shield" | "knotwork" | "blank"
+// ("blank" etches only the border ring, for custom painting).
+MOSAIC     = "none";
+ETCH_DEPTH = 0.6;
+
+// Centerpiece tiles keep their perimeter grooves but skip interior
+// wall channels — the pattern is meant to be open floor.
+module mosaic_tile(w = 2, l = 2) {
+    difference() {
+        floor_tile(w, l, interior_grooves = false);
+        if (scaled(ETCH_DEPTH) > 0 && MOSAIC != "none")
+            translate([grid(w) / 2, grid(l) / 2,
+                       floor_t() - scaled(ETCH_DEPTH)])
+                linear_extrude(height = scaled(ETCH_DEPTH) + EPS)
+                    mosaic_pattern(min(grid(w), grid(l)) / 2 - 5);
+    }
+}
+
+module mosaic_pattern(R) {
+    if (MOSAIC == "compass")  compass_rose_2d(R);
+    if (MOSAIC == "shield")   shield_2d(R);
+    if (MOSAIC == "knotwork") knot_2d(R);
+    if (MOSAIC == "blank")    ring_2d(R);
+}
+
+module ring_2d(R, w = 1.2) {
+    difference() { circle(R); circle(R - w); }
+}
+
+// Four cardinal points, four shorter intercardinals, double ring.
+module compass_rose_2d(R) {
+    ring_2d(R);
+    ring_2d(R - 2.2, 0.8);
+    Rp = R - 4;
+    for (a = [0 : 90 : 270]) rotate(a)
+        polygon([[0, Rp], [Rp * 0.18, 0], [0, -Rp * 0.18],
+                 [-Rp * 0.18, 0]]);
+    for (a = [45 : 90 : 315]) rotate(a)
+        polygon([[0, Rp * 0.62], [Rp * 0.12, 0], [0, -Rp * 0.12],
+                 [-Rp * 0.12, 0]]);
+}
+
+// Heater shield: outline groove plus a chevron band.
+module shield_solid(w, h) {
+    polygon([[-w / 2, h / 2], [w / 2, h / 2], [w / 2, h * 0.05],
+             [0, -h / 2], [-w / 2, h * 0.05]]);
+}
+
+module shield_2d(R) {
+    w = 1.4 * R;
+    h = 1.8 * R;
+    difference() {
+        shield_solid(w, h);
+        offset(delta = -1.4) shield_solid(w, h);
+    }
+    intersection() {
+        offset(delta = -2.6) shield_solid(w, h);
+        chevron_band(w / 2 - 1, h * 0.05, w * 0.35, 2.6);
+    }
+}
+
+// Upward-pointing chevron band: outer V from (+/-wv, y1) down to
+// (0, y1 - drop), band thickness bt.
+module chevron_band(wv, y1, drop, bt) {
+    polygon([[-wv, y1], [0, y1 - drop], [wv, y1],
+             [wv, y1 + bt], [0, y1 - drop + bt], [-wv, y1 + bt]]);
+}
+
+// Interlocking diamond lattice inside a border ring.
+module knot_2d(R) {
+    ring_2d(R);
+    intersection() {
+        circle(R - 2.2);
+        for (k = [-4 : 4]) {
+            rotate(45)  translate([k * 6, 0])
+                square([1.4, 4 * R], center = true);
+            rotate(-45) translate([k * 6, 0])
+                square([1.4, 4 * R], center = true);
+        }
+    }
+}
+
+// ---------------------------------------------------------------------
+// Phase 3: decorative wall features.
+// DECOR: "none" | "sconce" (angled torch socket, interior face) |
+//        "banner_peg" (rod peg with retaining tip, interior face) |
+//        "gargoyle_socket" (glue pocket, exterior face near top)
+// One feature per wall; walls print lying flat so pegs are printable.
+DECOR        = "none";
+DECOR_H_FRAC = 0.72;
+SCONCE_D     = 4;      // torch stem diameter (absolute, fit)
+PEG_D        = 3;
+
+module decor_cut(cx) {
+    wt = wall_t();
+    z  = DECOR_H_FRAC * wall_h();
+    // Torch socket: bore into the -Y face, tilted 25 degrees up, so a
+    // torch stem leans out over the room.
+    if (DECOR == "sconce")
+        translate([cx, -wt / 2 - EPS, z])
+            rotate([-65, 0, 0])
+                cylinder(h = wt + 4, d = SCONCE_D + fit_clearance());
+    // Gargoyle glue pocket on the +Y (exterior) face near the top.
+    if (DECOR == "gargoyle_socket")
+        translate([cx - 3, wt / 2 - 4, wall_h() - 10])
+            cube([6, 4 + EPS, 6]);
+}
+
+module decor_add(cx) {
+    wt = wall_t();
+    z  = DECOR_H_FRAC * wall_h();
+    // Banner peg out of the -Y face with a retaining tip.
+    if (DECOR == "banner_peg") {
+        translate([cx, -wt / 2 + EPS, z])
+            rotate([90, 0, 0]) cylinder(h = 5 + EPS, d = PEG_D);
+        translate([cx, -wt / 2 - 5, z]) sphere(d = PEG_D + 1.5);
+    }
 }
