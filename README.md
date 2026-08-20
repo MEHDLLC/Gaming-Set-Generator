@@ -29,6 +29,9 @@ and shipped as a matching `.stl` + `.txt` description pair.
 | `stairs_straight` | staircase on a floor-tile footprint, 4 steps per grid unit of run, lands flush with the next storey's deck surface |
 | `deck_tile` | upper floor / ceiling plate, groove channels on BOTH faces; optional stairwell opening |
 | `column` | storey-height column; cross tenons snap into the groove-channel crossings of the floor below and deck above |
+| `curved_wall` | arc segment (`SEG_DEGREES`, default 90 — four close a ring) at `TOWER_R_UNITS` centerline radius; same end dovetails, curved foot/top rails, curved masonry, openings, optional battlements |
+| `tower_floor` | round plate with ring channels for curved wall rails; deck variant grooved both faces; optional 1x1-cell hatch |
+| `hatch_lid` | drop-in lid with lip and ring pull for any 1x1-cell opening |
 
 Wall openings (`OPENING` parameter): `door_arch`, `door_rect`,
 `door_portcullis` (2-unit walls), `window_slit` (splayed embrasure),
@@ -38,6 +41,12 @@ rise, sill heights, and bar pitch are all parameters.
 Wall decor (`DECOR` parameter, one feature per wall): `sconce`
 (angled torch socket), `banner_peg` (rod peg with retaining tip),
 `gargoyle_socket` (glue pocket for a separately printed figure).
+
+Wall variants: `CRENELLATED` cuts battlements into any wall top
+(a half-height crenellated parapet doubles as a deck-edge railing);
+`RUIN` (0-1) applies a seeded step-down collapse profile — end
+connectors truncate with the profile so partial-height mating still
+works.
 
 Surface texture (`TEXTURE` parameter, seeded by `TEXTURE_SEED`):
 `ashlar` (coursed stone), `brick` (running bond), `rubble` (rough
@@ -72,8 +81,9 @@ pinned explicitly in `styles`. Each kit renders to
 `generated/<kit_id>/` along with iso + top-down preview thumbnails.
 
 Current kits: `stonebound_keep` (tab & slot, seed 42),
-`lodestone_vault` (5x2mm magnets, seed 7), plus the `calibration`
-coupon set.
+`stonebound_turret` (matching turret expansion — same seed and
+connectors, so it mixes with the Keep), `lodestone_vault` (5x2mm
+magnets, seed 7), plus the `calibration` coupon set.
 
 Every piece ships with three files: `<name>.stl`, `<name>.txt`
 (the four-section listing description), and `<name>.tags.txt` (a

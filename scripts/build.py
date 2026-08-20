@@ -173,6 +173,12 @@ def suggest_tags(piece, params):
         tags += ["stone column", "pillar", "multi level"]
     elif "deck_tile" in scad:
         tags += ["second floor", "multi level", "dnd tiles"]
+    elif "curved_wall" in scad:
+        tags += ["castle tower", "turret", "round tower"]
+    elif "tower_floor" in scad:
+        tags += ["castle tower", "turret", "multi level"]
+    elif "hatch_lid" in scad:
+        tags += ["trapdoor", "hatch"]
     elif "floor_tile" in scad:
         tags += ["dungeon floor tile", "dnd tiles"]
     elif "mosaic" in scad:
@@ -185,6 +191,10 @@ def suggest_tags(piece, params):
         tags += ["calibration", "test print"]
     for key in ("OPENING", "DECOR", "MOSAIC", "TEXTURE"):
         tags += STYLE_TAGS.get(params.get(key, ""), [])
+    if params.get("CRENELLATED"):
+        tags.append("battlements")
+    if params.get("RUIN", 0):
+        tags += ["ruins", "ruined wall"]
     if params.get("CONNECTOR") == "magnet":
         tags.append("magnetic terrain")
     seen, out = set(), []
@@ -352,6 +362,7 @@ def render_previews(kit, styles, kit_dir, failures):
         print(f"[skip]   {kit['kit_id']}: no xvfb, previews not rendered")
         return
     style_params = {
+        "SCENE":        kit.get("preview_scene", "room"),
         "TEXTURE":      styles.get("texture", "none"),
         "TEXTURE_SEED": kit.get("seed", 0),
         "DOOR_STYLE":   styles.get("door", "door_arch"),
@@ -360,10 +371,16 @@ def render_previews(kit, styles, kit_dir, failures):
         "DECOR_STYLE":  styles.get("decor", "sconce"),
         **kit.get("shared", {}),
     }
-    views = {
-        "preview_iso": "51,51,25,55,0,110,330",
-        "preview_top": "51,51,0,0,0,0,300",
-    }
+    if kit.get("preview_scene") == "tower":
+        views = {
+            "preview_iso": "0,0,60,62,0,155,380",
+            "preview_top": "0,0,0,0,0,0,260",
+        }
+    else:
+        views = {
+            "preview_iso": "51,51,25,55,0,110,330",
+            "preview_top": "51,51,0,0,0,0,300",
+        }
     for name, cam in views.items():
         png = kit_dir / f"{name}.png"
         proc = render_scad(png, ROOT / "tests" / "kit_preview.scad",

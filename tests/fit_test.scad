@@ -13,7 +13,8 @@ TEST = "floor_x";
 valid = ["floor_x", "floor_y", "wall_wall", "corner_male",
          "corner_female", "wall_on_floor", "wall_on_floor_interior",
          "stairs_on_floor", "column_on_floor", "deck_on_wall",
-         "column_to_deck"];
+         "column_to_deck", "curved_pair", "curved_on_tower_floor",
+         "tower_deck_on_curved", "hatch_lid_fit", "ruined_pair"];
 assert(len([for (v = valid) if (v == TEST) v]) == 1,
        str("unknown TEST: ", TEST));
 
@@ -38,6 +39,15 @@ module piece_a() {
     // Wall standing under the shared edge of two deck tiles.
     else if (TEST == "deck_on_wall")
         translate([0, grid(1), 0]) wall_straight(1);
+    else if (TEST == "curved_pair") curved_wall(90);
+    else if (TEST == "curved_on_tower_floor")
+        translate([0, 0, floor_t()]) curved_wall(90);
+    else if (TEST == "tower_deck_on_curved") curved_wall(90);
+    // Lid seated in a tower deck's hatch: plug in the hole, lip on top.
+    else if (TEST == "hatch_lid_fit")
+        translate([0, 0, floor_t() + FOOT_GROOVE_D - scaled(2)])
+            hatch_lid();
+    else if (TEST == "ruined_pair") wall_straight(1, ruin = 0.6);
 }
 
 module piece_b() {
@@ -71,6 +81,13 @@ module piece_b() {
         translate([0, 0, wall_h()]) deck_tile(1, 1);
         translate([0, grid(1), wall_h()]) deck_tile(1, 1);
     }
+    else if (TEST == "curved_pair") rotate([0, 0, 90]) curved_wall(90);
+    else if (TEST == "curved_on_tower_floor") tower_floor(false, false);
+    else if (TEST == "tower_deck_on_curved")
+        translate([0, 0, wall_h()]) tower_floor(true, false);
+    else if (TEST == "hatch_lid_fit") tower_floor(true, true);
+    else if (TEST == "ruined_pair")
+        translate([grid(1), 0, 0]) wall_straight(1, ruin = 0.6);
 }
 
 intersection() {

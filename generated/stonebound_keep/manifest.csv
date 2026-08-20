@@ -16,4 +16,6 @@ stairs_1x2,staircase (1x2),stairs_1x2.stl,6496,25.4,50.8,60.4,44.78,55.5,0
 column,storey column,column.stl,352,16.0,16.0,53.6,2.87,3.6,0
 deck_2x2,upper-floor deck tile (2x2),deck_2x2.stl,4124,56.8,56.8,5.6,11.51,14.3,0
 deck_2x2_stairwell,"stairwell deck tile (2x2, 1x2 opening)",deck_2x2_stairwell.stl,3612,56.8,56.8,5.6,5.73,7.1,0
-# kit totals: 17 pieces, 232g solid PLA, 0 magnets
+wall_ruined_2u,ruined wall (2 units),wall_ruined_2u.stl,4772,54.8,6.0,47.04,7.48,9.3,0
+parapet_crenellated,"crenellated parapet (1 unit, half height)",parapet_crenellated.stl,5032,29.4,6.0,26.8,3.48,4.3,0
+# kit totals: 19 pieces, 246g solid PLA, 0 magnets

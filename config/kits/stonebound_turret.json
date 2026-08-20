@@ -1,0 +1,88 @@
+{
+  "kit_id": "stonebound_turret",
+  "kit_name": "Stonebound Keep Turret",
+  "seed": 42,
+  "shared": {
+    "CONNECTOR": "tab",
+    "FIT": "normal"
+  },
+  "preview": true,
+  "preview_scene": "tower",
+  "pieces": [
+    {
+      "name": "curved_wall_90",
+      "scad": "src/pieces/curved_wall.scad",
+      "params": {},
+      "piece_type": "curved wall segment (90 degrees)",
+      "style": "{texture}, four close a ring",
+      "extra": "1.5-unit centerline radius"
+    },
+    {
+      "name": "curved_wall_90_window",
+      "scad": "src/pieces/curved_wall.scad",
+      "params": {
+        "OPENING": "$window"
+      },
+      "piece_type": "curved window segment (90 degrees)",
+      "style": "{window}, {texture}",
+      "extra": "1.5-unit centerline radius"
+    },
+    {
+      "name": "curved_wall_90_door",
+      "scad": "src/pieces/curved_wall.scad",
+      "params": {
+        "OPENING": "$door"
+      },
+      "piece_type": "curved doorway segment (90 degrees)",
+      "style": "{door}, {texture}",
+      "extra": "ground-level tower entry"
+    },
+    {
+      "name": "curved_wall_90_crenellated",
+      "scad": "src/pieces/curved_wall.scad",
+      "params": {
+        "CRENELLATED": true
+      },
+      "piece_type": "crenellated curved segment (90 degrees)",
+      "style": "{texture}, battlement top",
+      "extra": "turret crown"
+    },
+    {
+      "name": "tower_floor",
+      "scad": "src/pieces/tower_floor.scad",
+      "params": {},
+      "piece_type": "round tower floor",
+      "style": "{texture}, ring channel for wall feet",
+      "extra": "flush with wall outer face"
+    },
+    {
+      "name": "tower_deck",
+      "scad": "src/pieces/tower_floor.scad",
+      "params": {
+        "TOWER_DECK": true
+      },
+      "piece_type": "round tower deck",
+      "style": "{texture}, ring channels both faces",
+      "extra": "stacks turret storeys"
+    },
+    {
+      "name": "tower_deck_hatch",
+      "scad": "src/pieces/tower_floor.scad",
+      "params": {
+        "TOWER_DECK": true,
+        "TOWER_HATCH": true
+      },
+      "piece_type": "round tower deck with hatch",
+      "style": "{texture}, 1x1-cell ladder opening",
+      "extra": "pairs with the hatch lid"
+    },
+    {
+      "name": "hatch_lid",
+      "scad": "src/pieces/hatch_lid.scad",
+      "params": {},
+      "piece_type": "hatch lid",
+      "style": "drop-in plug with lip and ring pull",
+      "extra": "fits any 1x1-cell deck opening"
+    }
+  ]
+}

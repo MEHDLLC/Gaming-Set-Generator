@@ -168,7 +168,8 @@ module edge_fastener(z) {
 // (y = 0). Tab gender: male at +X end, female at -X end; the tab runs
 // the full height as a vertical sliding dovetail. Magnet/dowel: two
 // fasteners per end face (one, on short walls).
-module wall_straight(units = 1, opening = OPENING, decor = DECOR) {
+module wall_straight(units = 1, opening = OPENING, decor = DECOR,
+                     crenellated = CRENELLATED, ruin = RUIN) {
     h  = wall_h();
     wt = wall_t();
     len = grid(units);
@@ -189,8 +190,9 @@ module wall_straight(units = 1, opening = OPENING, decor = DECOR) {
                         tab_male(h, WALL_TAB_NECK, WALL_TAB_HEAD,
                                  WALL_TAB_DEPTH);
                 if (WALL_FOOT) foot_rail(len);
-                if (WALL_TOP_RAIL) translate([0, 0, h])
-                    mirror([0, 0, 1]) foot_rail(len);
+                if (WALL_TOP_RAIL && !crenellated && ruin == 0)
+                    translate([0, 0, h])
+                        mirror([0, 0, 1]) foot_rail(len);
             }
             if (CONNECTOR == "tab")
                 tab_female(h, fit_clearance(), WALL_TAB_NECK,
@@ -203,6 +205,8 @@ module wall_straight(units = 1, opening = OPENING, decor = DECOR) {
             opening_void(len / 2, opening);
             decor_cut(len / 2, decor);
             wall_texture_cuts(len, TEXTURE_SEED);
+            if (crenellated) straight_crenels(len, wt, h);
+            if (ruin > 0) ruin_cuts(len, wt, h, ruin);
             if (PART_ID != "" && WALL_FOOT) rail_id_emboss(len / 2);
         }
         opening_bars(len / 2, opening);
@@ -224,6 +228,30 @@ module rail_id_emboss(cx) {
                 text(PART_ID, size = 1.9, halign = "center",
                      valign = "center",
                      font = "Liberation Sans:style=Bold");
+}
+
+// Battlement gaps cut into the wall top, symmetric about the center.
+module straight_crenels(len, wt, h) {
+    m = scaled(MERLON_W);
+    c = scaled(CRENEL_W);
+    n = max(1, floor((len - m) / (c + m)));
+    start = (len - (n * c + (n + 1) * m)) / 2 + m;
+    for (i = [0 : n - 1])
+        translate([start + i * (c + m), -wt / 2 - 1,
+                   h - scaled(CRENEL_D)])
+            cube([c, wt + 2, scaled(CRENEL_D) + FOOT_H + EPS]);
+}
+
+// Noisy step-down collapse profile, biased lower toward the +X end.
+// Boxes overshoot past the male tab so it is truncated with the wall.
+module ruin_cuts(len, wt, h, level) {
+    n = 8;
+    r = rands(0, 1, n, TEXTURE_SEED * 53 + 7);
+    seg = len / n;
+    for (i = [0 : n - 1])
+        translate([i * seg - EPS, -wt / 2 - 1,
+                   h * max(0.22, 1 - level * (i + 1 + r[i]) / n * 1.25)])
+            cube([seg + WALL_TAB_DEPTH + 2, wt + 2, h + FOOT_H + 1]);
 }
 
 // Tenon rail under the wall base; seats into the floor groove channel.
@@ -703,4 +731,191 @@ module column() {
     translate([-pl / 2, -pl / 2, h - scaled(2.5)])
         cube([pl, pl, scaled(2.5)]);
     cylinder(h = h, d = scaled(COLUMN_D));
+}
+
+// ---------------------------------------------------------------------
+// Curved walls & towers.
+//
+// A curved segment is an arc of a cylindrical shell whose CENTERLINE
+// radius is TOWER_R_UNITS grid units; SEG_DEGREES segments close a
+// full ring (90 -> four per ring). End faces are radial planes with
+// the same vertical dovetail (or magnet/dowel pockets) as straight
+// walls, so segments chain male-into-female around the circle.
+// Curved rails run under the foot and along the top; they seat into
+// the RING channels of tower_floor / tower deck plates, giving silos
+// and turrets the same stacking system as square rooms.
+// Seeded ruin: 0 = intact; up to 1 = heavily collapsed. The wall top
+// steps down along a noisy descent toward the +X end; end connectors
+// are truncated with the profile so partial-height mating still works.
+RUIN = 0;
+
+TOWER_R_UNITS = 1.5;
+SEG_DEGREES   = 90;
+CRENELLATED   = false;   // battlement top (replaces the top rail)
+MERLON_W      = 8;       // scaled battlement tooth
+CRENEL_W      = 6;       // scaled gap
+CRENEL_D      = 8;       // scaled gap depth
+
+function tower_r() = grid(TOWER_R_UNITS);
+
+module curved_wall(deg = SEG_DEGREES, opening = OPENING,
+                   crenellated = CRENELLATED) {
+    R  = tower_r();
+    wt = wall_t();
+    h  = wall_h();
+    union() {
+        difference() {
+            union() {
+                rotate_extrude(angle = deg)
+                    translate([R - wt / 2, 0]) square([wt, h]);
+                if (WALL_FOOT)
+                    rotate_extrude(angle = deg)
+                        translate([R - FOOT_W / 2, -FOOT_H])
+                            square([FOOT_W, FOOT_H + EPS]);
+                if (WALL_TOP_RAIL && !crenellated)
+                    rotate_extrude(angle = deg)
+                        translate([R - FOOT_W / 2, h - EPS])
+                            square([FOOT_W, FOOT_H + EPS]);
+                if (CONNECTOR == "tab")
+                    rotate([0, 0, deg]) translate([R, 0, 0])
+                        rotate([0, 0, 90])
+                            tab_male(h, WALL_TAB_NECK, WALL_TAB_HEAD,
+                                     WALL_TAB_DEPTH);
+            }
+            if (CONNECTOR == "tab")
+                translate([R, 0, 0]) rotate([0, 0, 90])
+                    tab_female(h, fit_clearance(), WALL_TAB_NECK,
+                               WALL_TAB_HEAD, WALL_TAB_DEPTH);
+            for (z = wall_fastener_heights()) {
+                translate([R, 0, 0]) rotate([0, 0, 90])
+                    edge_fastener(z);
+                rotate([0, 0, deg]) translate([R, 0, 0])
+                    rotate([0, 0, -90]) edge_fastener(z);
+            }
+            if (opening != "none")
+                rotate([0, 0, deg / 2]) translate([R, 0, 0])
+                    rotate([0, 0, 90]) opening_void(0, opening);
+            if (crenellated) curved_crenels(deg, R, wt, h);
+            curved_texture(deg, R, wt, h);
+            if (PART_ID != "" && WALL_FOOT)
+                rotate([0, 0, deg / 2])
+                    translate([R, 0, -FOOT_H - EPS])
+                        rotate([0, 0, 90])
+                            linear_extrude(height = 0.35 + EPS)
+                                mirror([1, 0, 0])
+                                    text(PART_ID, size = 1.9,
+                                         halign = "center",
+                                         valign = "center",
+                                         font = "Liberation Sans:style=Bold");
+        }
+        if (opening != "none")
+            rotate([0, 0, deg / 2]) translate([R, 0, 0])
+                rotate([0, 0, 90]) opening_bars(0, opening);
+    }
+}
+
+module curved_crenels(deg, R, wt, h) {
+    step = (scaled(MERLON_W) + scaled(CRENEL_W)) / R * 57.2958;
+    for (a = [step / 2 : step : deg - step / 2])
+        rotate([0, 0, a])
+            translate([R - wt / 2 - 1, -scaled(CRENEL_W) / 2,
+                       h - scaled(CRENEL_D)])
+                cube([wt + 2, scaled(CRENEL_W),
+                      scaled(CRENEL_D) + FOOT_H + EPS]);
+}
+
+// Masonry for cylindrical shells: annular course grooves plus
+// staggered radial joints, both faces. Angular keep-out near the end
+// faces protects the connectors.
+module curved_texture(deg, R, wt, h) {
+    if (TEXTURE != "none") {
+        ch  = tex_course();
+        bw  = tex_block();
+        nc  = max(1, floor(h / ch));
+        ma  = TEX_MARGIN / R * 57.2958;         // end margin, degrees
+        stp = bw / R * 57.2958;                 // joint pitch, degrees
+        for (k = [1 : 1 : nc - 1]) {
+            rotate_extrude(angle = deg)
+                translate([R + wt / 2 - TEX_DEPTH,
+                           k * ch - TEX_GROOVE / 2])
+                    square([TEX_DEPTH + EPS, TEX_GROOVE]);
+            rotate_extrude(angle = deg)
+                translate([R - wt / 2 - EPS,
+                           k * ch - TEX_GROOVE / 2])
+                    square([TEX_DEPTH + EPS, TEX_GROOVE]);
+        }
+        for (k = [0 : 1 : nc - 1]) {
+            jit = rands(-stp / 3, stp / 3, 12, TEXTURE_SEED * 41 + k);
+            off = (k % 2 == 0) ? 0 : stp / 2;
+            for (i = [0 : 11]) {
+                a = ma + off + i * stp + jit[i] * tex_jitter();
+                if (a > ma && a < deg - ma) {
+                    z1 = min((k + 1) * ch, h);
+                    rotate([0, 0, a]) {
+                        translate([R + wt / 2 - TEX_DEPTH,
+                                   -TEX_GROOVE / 2, k * ch])
+                            cube([TEX_DEPTH + 1, TEX_GROOVE,
+                                  z1 - k * ch]);
+                        translate([R - wt / 2 - 1, -TEX_GROOVE / 2,
+                                   k * ch])
+                            cube([TEX_DEPTH + 1, TEX_GROOVE,
+                                  z1 - k * ch]);
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Round tower floor / deck plate. Ring channels accept curved wall
+// rails: top always, underside too when both_grooves (a tower deck
+// resting on the storey below). Optional 1x1-cell central hatch.
+module tower_floor(both_grooves = false, hatch = false) {
+    R    = tower_r();
+    wt   = wall_t();
+    t    = floor_t() + (both_grooves ? FOOT_GROOVE_D : 0);
+    Rout = R + wt / 2;
+    gw   = (FOOT_W + fit_clearance()) / 2;
+    difference() {
+        cylinder(h = t, r = Rout);
+        rotate_extrude()
+            translate([R - gw, t - FOOT_GROOVE_D])
+                square([2 * gw, FOOT_GROOVE_D + EPS]);
+        if (both_grooves)
+            rotate_extrude()
+                translate([R - gw, -EPS])
+                    square([2 * gw, FOOT_GROOVE_D + EPS]);
+        if (TEXTURE != "none")
+            translate([-Rout, Rout, t]) rotate([90, 0, 0])
+                masonry_face(2 * Rout, 2 * Rout, TEXTURE_SEED + 6, 2);
+        if (hatch)
+            translate([-grid(0.5), -grid(0.5), -EPS])
+                cube([grid(1), grid(1), t + 2 * EPS]);
+        if (PART_ID != "" && !hatch)
+            translate([0, 0, -EPS])
+                linear_extrude(height = 0.4 + EPS)
+                    mirror([1, 0, 0])
+                        text(PART_ID, size = 2.0, halign = "center",
+                             valign = "center",
+                             font = "Liberation Sans:style=Bold");
+    }
+}
+
+// Drop-in hatch lid for the 1x1-cell openings in decks and tower
+// plates: a plug that sits in the hole with a wider lip resting on
+// the surface, plus an etched ring pull.
+module hatch_lid() {
+    plug = grid(1) - 2 * fit_clearance();
+    difference() {
+        union() {
+            translate([-plug / 2, -plug / 2, 0])
+                cube([plug, plug, scaled(2)]);
+            translate([-plug / 2 - scaled(3), -plug / 2 - scaled(3),
+                       scaled(2)])
+                cube([plug + 2 * scaled(3), plug + 2 * scaled(3),
+                      scaled(2.4)]);
+        }
+        translate([0, 0, scaled(4.4) - 0.6])
+            linear_extrude(height = 0.6 + EPS) ring_2d(scaled(5), 1.6);
+    }
 }

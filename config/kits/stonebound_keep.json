@@ -184,6 +184,29 @@
       "piece_type": "stairwell deck tile (2x2, 1x2 opening)",
       "style": "{texture} floor, grooved both faces",
       "extra": "opening admits the staircase"
+    },
+    {
+      "name": "wall_ruined_2u",
+      "scad": "src/pieces/wall_straight.scad",
+      "params": {
+        "WALL_UNITS": 2,
+        "RUIN": 0.6
+      },
+      "piece_type": "ruined wall (2 units)",
+      "style": "{texture}, collapsed step-down profile",
+      "extra": "seeded damage, connectors truncated with the profile"
+    },
+    {
+      "name": "parapet_crenellated",
+      "scad": "src/pieces/wall_straight.scad",
+      "params": {
+        "WALL_UNITS": 1,
+        "WALL_HEIGHT_UNITS": 1,
+        "CRENELLATED": true
+      },
+      "piece_type": "crenellated parapet (1 unit, half height)",
+      "style": "{texture}, battlement top",
+      "extra": "doubles as deck-edge railing"
     }
   ]
 }

@@ -1,0 +1,10 @@
+name,piece_type,file,triangles,bbox_x_mm,bbox_y_mm,bbox_z_mm,solid_volume_cm3,solid_pla_g,magnets_needed
+curved_wall_90,curved wall segment (90 degrees),curved_wall_90.stl,7440,45.1,41.1,53.6,17.98,22.3,0
+curved_wall_90_window,curved window segment (90 degrees),curved_wall_90_window.stl,7348,45.1,41.1,53.6,17.34,21.5,0
+curved_wall_90_door,curved doorway segment (90 degrees),curved_wall_90_door.stl,7428,45.1,41.1,53.6,14.76,18.3,0
+curved_wall_90_crenellated,crenellated curved segment (90 degrees),curved_wall_90_crenellated.stl,7492,45.1,41.1,52.2,16.59,20.6,0
+tower_floor,round tower floor,tower_floor.stl,6796,82.2,82.15,4.0,18.93,23.5,0
+tower_deck,round tower deck,tower_deck.stl,7548,82.2,82.15,5.6,26.21,32.5,0
+tower_deck_hatch,round tower deck with hatch,tower_deck_hatch.stl,4208,82.2,82.15,5.6,22.74,28.2,0
+hatch_lid,hatch lid,hatch_lid.stl,560,31.1,31.1,4.4,3.56,4.4,0
+# kit totals: 8 pieces, 171g solid PLA, 0 magnets

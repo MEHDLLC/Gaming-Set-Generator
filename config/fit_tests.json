@@ -84,5 +84,41 @@
       "TEST": "column_to_deck",
       "CONNECTOR": "tab"
     }
+  },
+  {
+    "name": "curved_pair",
+    "params": {
+      "TEST": "curved_pair",
+      "CONNECTOR": "tab"
+    }
+  },
+  {
+    "name": "curved_on_tower_floor",
+    "params": {
+      "TEST": "curved_on_tower_floor",
+      "CONNECTOR": "tab"
+    }
+  },
+  {
+    "name": "tower_deck_on_curved",
+    "params": {
+      "TEST": "tower_deck_on_curved",
+      "CONNECTOR": "tab"
+    }
+  },
+  {
+    "name": "hatch_lid_fit",
+    "params": {
+      "TEST": "hatch_lid_fit",
+      "CONNECTOR": "tab"
+    }
+  },
+  {
+    "name": "ruined_pair",
+    "params": {
+      "TEST": "ruined_pair",
+      "CONNECTOR": "tab",
+      "TEXTURE_SEED": 42
+    }
   }
 ]
