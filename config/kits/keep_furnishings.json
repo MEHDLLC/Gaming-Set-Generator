@@ -106,6 +106,72 @@
       "style": "flat frame, reaches a deck resting on standard walls (print flat)",
       "extra": "58mm long",
       "connector_type": "no"
+    },
+    {
+      "name": "barrel",
+      "scad": "src/pieces/furniture.scad",
+      "params": {
+        "FURNITURE": "barrel"
+      },
+      "piece_type": "barrel",
+      "style": "bulged staves, four hoops, recessed head (print upright)",
+      "extra": "11mm tall",
+      "connector_type": "no"
+    },
+    {
+      "name": "keg",
+      "scad": "src/pieces/furniture.scad",
+      "params": {
+        "FURNITURE": "keg"
+      },
+      "piece_type": "keg with tap",
+      "style": "small barrel, tap spout near the base (print upright)",
+      "extra": "7mm tall",
+      "connector_type": "no"
+    },
+    {
+      "name": "fireplace",
+      "scad": "src/pieces/furniture.scad",
+      "params": {
+        "FURNITURE": "fireplace"
+      },
+      "piece_type": "fireplace with chimney",
+      "style": "arched firebox, chamfered mantel, tapering stack (print upright)",
+      "extra": "38mm tall overall",
+      "connector_type": "no"
+    },
+    {
+      "name": "sarcophagus",
+      "scad": "src/pieces/furniture.scad",
+      "params": {
+        "FURNITURE": "sarcophagus"
+      },
+      "piece_type": "sarcophagus",
+      "style": "open body plus separate hipped lid with etched sword (both print upright)",
+      "extra": "lift-off lid",
+      "connector_type": "no"
+    },
+    {
+      "name": "altar",
+      "scad": "src/pieces/furniture.scad",
+      "params": {
+        "FURNITURE": "altar"
+      },
+      "piece_type": "altar",
+      "style": "stepped plinth, etched rune ring on the slab (print upright)",
+      "extra": "11mm tall",
+      "connector_type": "no"
+    },
+    {
+      "name": "cage",
+      "scad": "src/pieces/furniture.scad",
+      "params": {
+        "FURNITURE": "cage"
+      },
+      "piece_type": "hanging cage",
+      "style": "corner posts, bars all sides, top ring (print upright)",
+      "extra": "18mm tall",
+      "connector_type": "no"
     }
   ]
 }

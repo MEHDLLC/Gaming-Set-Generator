@@ -1,0 +1,78 @@
+{
+  "kit_id": "keep_gatehouse",
+  "kit_name": "Stonebound Keep Gatehouse",
+  "seed": 42,
+  "shared": {
+    "CONNECTOR": "tab",
+    "FIT": "normal"
+  },
+  "preview": true,
+  "preview_scene": "gatehouse",
+  "pieces": [
+    {
+      "name": "gate_wall",
+      "scad": "src/pieces/gate_wall.scad",
+      "params": {
+        "GATE_UNITS": 2
+      },
+      "piece_type": "main gate wall (2 units)",
+      "style": "{texture}, arched gateway with beam brackets",
+      "extra": "22x42mm opening, interior-face brackets"
+    },
+    {
+      "name": "gate_doors",
+      "scad": "src/pieces/gate_props.scad",
+      "params": {
+        "GATE_PIECE": "gate_doors"
+      },
+      "piece_type": "gate door pair",
+      "style": "planked leaves with straps (print flat)",
+      "extra": "fills the gate arch, 0.3mm center gap",
+      "connector_type": "no"
+    },
+    {
+      "name": "gate_beam",
+      "scad": "src/pieces/gate_props.scad",
+      "params": {
+        "GATE_PIECE": "gate_beam"
+      },
+      "piece_type": "gate securing beam",
+      "style": "square bar with end stops (print flat)",
+      "extra": "drops into the gate wall brackets to bar the doors",
+      "connector_type": "no"
+    },
+    {
+      "name": "drawbridge",
+      "scad": "src/pieces/gate_props.scad",
+      "params": {
+        "GATE_PIECE": "drawbridge"
+      },
+      "piece_type": "drawbridge",
+      "style": "planked deck, rope holes, approach chamfer (print flat)",
+      "extra": "spans two grid units",
+      "connector_type": "no"
+    },
+    {
+      "name": "door_arch_prop",
+      "scad": "src/pieces/gate_props.scad",
+      "params": {
+        "GATE_PIECE": "door_arch"
+      },
+      "piece_type": "arched door prop",
+      "style": "planked, strapped, handle boss (print flat)",
+      "extra": "friction-fits the arched doorway walls",
+      "connector_type": "no"
+    },
+    {
+      "name": "door_rect_prop",
+      "scad": "src/pieces/gate_props.scad",
+      "params": {
+        "GATE_PIECE": "door_rect"
+      },
+      "piece_type": "rectangular door prop",
+      "style": "planked, strapped, handle boss (print flat)",
+      "extra": "friction-fits the rectangular doorway walls",
+      "connector_type": "no"
+    }
+  ]
+}

@@ -6,6 +6,7 @@ include <../src/lib/grid.scad>
 include <../src/lib/connectors.scad>
 include <../src/lib/pieces.scad>
 include <../src/lib/furniture.scad>
+include <../src/lib/gatehouse.scad>
 
 DOOR_STYLE   = "door_arch";
 WINDOW_STYLE = "window_arch";
@@ -57,6 +58,44 @@ module furniture_scene() {
     }
 }
 
+// Gatehouse: gate wall flanked by plain walls, doors in the arch,
+// beam in the brackets, drawbridge lowered in front.
+module gatehouse_scene() {
+    ftg = floor_t();
+    color("BurlyWood") for (i = [-1 : 2], j = [0 : 1])
+        translate([grid(i), grid(j), 0]) floor_tile(1, 1);
+    color("LightSlateGray") translate([0, grid(1), ftg]) {
+        gate_wall(2);
+        translate([-grid(1), 0, 0]) wall_straight(1);
+        translate([grid(2), 0, 0]) wall_straight(1);
+    }
+    color("Tan") {
+        // doors standing in the arch, slightly ajar look: both closed
+        translate([grid(1) - (scaled(GATE_W) - 0.6) / 2,
+                   grid(1) + 1.3, ftg])
+            rotate([90, 0, 0]) gate_doors_closed();
+        // beam resting in the brackets
+        translate([grid(1) - (scaled(GATE_W) + 2 * scaled(4)
+                              + scaled(10)) / 2,
+                   grid(1) - wall_t() / 2 - scaled(2.3)
+                   - scaled(GATE_BEAM_SQ) / 2,
+                   ftg + scaled(GATE_BEAM_Z)])
+            gate_beam();
+        // drawbridge lowered outside the gate
+        translate([grid(1) - (grid(2) - scaled(6)) / 2,
+                   grid(1) + wall_t() / 2 + 1, ftg])
+            drawbridge();
+    }
+}
+
+// Both gate leaves in closed position (no print gap).
+module gate_doors_closed() {
+    w = scaled(GATE_W) - 0.6;
+    h = scaled(GATE_H) - 0.4;
+    translate([w / 2, 0, 0]) door_panel(w, h)
+        profile_arch(w, h, scaled(GATE_RISE));
+}
+
 module room_scene() {
 
 color("BurlyWood") {
@@ -91,5 +130,6 @@ color("RosyBrown") translate([0, 0, ft + wall_h()]) deck_tile(2, 2);
 }
 
 if (SCENE == "tower") tower_scene();
+else if (SCENE == "gatehouse") gatehouse_scene();
 else if (SCENE == "furniture") furniture_scene();
 else room_scene();

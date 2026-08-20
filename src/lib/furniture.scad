@@ -188,6 +188,138 @@ module f_ladder(len = 0) {
         translate([0, y, 0]) cube([w, scaled(1.8), rt]);
 }
 
+// ---- tavern set ------------------------------------------------------
+// Barrel: bulged staves via a tapered rotate_extrude, raised hoops.
+module f_barrel(h = 11, r0 = 4.2, rm = 5.4) {
+    difference() {
+        rotate_extrude()
+            polygon([[0, 0], [scaled(r0), 0],
+                     [scaled(rm), scaled(h) / 2],
+                     [scaled(r0), scaled(h)], [0, scaled(h)]]);
+        // recessed head inside the top chime
+        translate([0, 0, scaled(h) - 0.5])
+            cylinder(h = 0.5 + EPS, r = scaled(r0) - scaled(0.8));
+    }
+    for (hz = [0.14, 0.42, 0.58, 0.86]) {
+        rr = scaled(r0) + (scaled(rm) - scaled(r0))
+             * (1 - abs(hz - 0.5) * 2);
+        rotate_extrude()
+            translate([rr - 0.15, scaled(h) * hz - scaled(0.4)])
+                square([0.35, scaled(0.8)]);
+    }
+}
+
+// Keg: small barrel with a tap spout near the base.
+module f_keg() {
+    f_barrel(7, 2.8, 3.5);
+    translate([0, -scaled(3.1), scaled(1.8)]) rotate([90, 0, 0])
+        cylinder(h = scaled(1.6), d = scaled(1.4));
+    translate([0, -scaled(4.5), scaled(1.2)])
+        cylinder(h = scaled(1.2), d = scaled(0.9));
+}
+
+// Fireplace with chimney: arched firebox recess, chamfered mantel,
+// tapering stack. Prints upright.
+module f_fireplace() {
+    w = scaled(20); d = scaled(9); mh = scaled(14);
+    difference() {
+        cube([w, d, mh]);
+        translate([w / 2, d / 2 + EPS, 0]) rotate([90, 0, 0])
+            linear_extrude(height = d / 2 + 2 * EPS)
+                profile_arch2(scaled(10), scaled(10), scaled(4));
+    }
+    translate([0, 0, mh]) hull() {                    // mantel
+        cube([w, d, EPS]);
+        translate([-scaled(1), -scaled(1), scaled(1)])
+            cube([w + scaled(2), d + scaled(1), scaled(0.8)]);
+    }
+    translate([w / 2, d * 0.55, mh + scaled(1.8)]) hull() {   // stack
+        translate([-w * 0.30, -d * 0.42, 0]) cube([w * 0.6, d * 0.84, EPS]);
+        translate([-w * 0.19, -d * 0.34, scaled(22)])
+            cube([w * 0.38, d * 0.68, scaled(2)]);
+    }
+}
+
+// Local arch profile (furniture lib stays standalone).
+module profile_arch2(w, h, rise) {
+    translate([-w / 2, -EPS]) square([w, h - rise + EPS]);
+    translate([0, h - rise]) scale([1, rise / (w / 2)])
+        intersection() { circle(d = w);
+                         translate([-w / 2, 0]) square([w, w / 2]); }
+}
+
+// ---- dungeon dressing ------------------------------------------------
+// Sarcophagus: open body plus a separate hipped lid with a locating
+// plug and etched sword, printed side by side.
+module f_sarcophagus() {
+    w = scaled(12); l = scaled(26); bh = scaled(8);
+    wall = scaled(1.6);
+    difference() {
+        cube([w, l, bh]);
+        translate([wall, wall, scaled(2)])
+            cube([w - 2 * wall, l - 2 * wall, bh]);
+    }
+    translate([w + scaled(4), 0, 0]) {
+        translate([wall + 0.15, wall + 0.15, 0])
+            cube([w - 2 * wall - 0.3, l - 2 * wall - 0.3, scaled(2.6)]);
+        translate([0, 0, scaled(1.8)]) difference() {
+            hull() {
+                cube([w, l, EPS]);
+                translate([scaled(2.2), scaled(2.2), scaled(2.2)])
+                    cube([w - scaled(4.4), l - scaled(4.4), EPS]);
+            }
+            // sword etch: blade + crossguard
+            translate([w / 2 - 0.4, l * 0.2, scaled(2.2) - 0.5])
+                cube([0.8, l * 0.52, 0.6]);
+            translate([w / 2 - scaled(2.2), l * 0.62, scaled(2.2) - 0.5])
+                cube([scaled(4.4), 0.8, 0.6]);
+        }
+    }
+}
+
+// Altar: stepped plinth, tapered riser, slab with etched rune ring.
+module f_altar() {
+    difference() {
+        union() {
+            translate([-scaled(9), -scaled(5.5), 0])
+                cube([scaled(18), scaled(11), scaled(2)]);
+            translate([-scaled(6.5), -scaled(3.5), scaled(2) - EPS])
+                cube([scaled(13), scaled(7), scaled(6)]);
+            hull() {
+                translate([-scaled(6.5), -scaled(3.5), scaled(8) - EPS])
+                    cube([scaled(13), scaled(7), EPS]);
+                translate([-scaled(9), -scaled(5.5), scaled(9.4)])
+                    cube([scaled(18), scaled(11), scaled(1.8)]);
+            }
+        }
+        translate([0, 0, scaled(11.2) - 0.5])
+            linear_extrude(height = 0.6) {
+                difference() { circle(scaled(3.6)); circle(scaled(3)); }
+                for (a = [0 : 60 : 300]) rotate(a)
+                    translate([scaled(3) - 0.2, -0.35])
+                        square([scaled(1.4), 0.7]);
+            }
+    }
+}
+
+// Cage: corner posts, bars on all four sides, solid top with a
+// hanging ring. Bar-top bridges are under 3mm.
+module f_cage() {
+    w = scaled(12); h = scaled(18); post = scaled(2); bar = scaled(1.5);
+    cube([w, w, scaled(1.5)]);
+    translate([0, 0, h - scaled(1.5)]) cube([w, w, scaled(1.5)]);
+    for (x = [0, w - post], y = [0, w - post])
+        translate([x, y, 0]) cube([post, post, h]);
+    for (c = [w * 0.36, w * 0.64]) {
+        for (y = [0, w - bar]) translate([c - bar / 2, y, 0])
+            cube([bar, bar, h]);
+        for (x = [0, w - bar]) translate([x, c - bar / 2, 0])
+            cube([bar, bar, h]);
+    }
+    translate([w / 2, w / 2, h - 0.4]) rotate([90, 0, 0])
+        rotate_extrude() translate([scaled(2), 0]) circle(scaled(0.7));
+}
+
 module furniture_piece(kind = FURNITURE) {
     if (kind == "table")     f_table();
     if (kind == "bench")     f_bench();
@@ -198,4 +330,10 @@ module furniture_piece(kind = FURNITURE) {
     if (kind == "throne")    f_throne();
     if (kind == "chest")     f_chest();
     if (kind == "ladder")    f_ladder();
+    if (kind == "barrel")    f_barrel();
+    if (kind == "keg")       f_keg();
+    if (kind == "fireplace") f_fireplace();
+    if (kind == "sarcophagus") f_sarcophagus();
+    if (kind == "altar")     f_altar();
+    if (kind == "cage")      f_cage();
 }

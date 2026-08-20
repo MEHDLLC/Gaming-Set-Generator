@@ -1,0 +1,8 @@
+name,piece_type,file,triangles,bbox_x_mm,bbox_y_mm,bbox_z_mm,solid_volume_cm3,solid_pla_g,magnets_needed
+gate_wall,main gate wall (2 units),gate_wall.stl,3900,54.8,10.0,53.6,10.34,12.8,0
+gate_doors,gate door pair,gate_doors.stl,444,21.4,41.59,3.19,1.5,1.9,0
+gate_beam,gate securing beam,gate_beam.stl,44,40.0,4.0,3.0,0.37,0.5,0
+drawbridge,drawbridge,drawbridge.stl,400,44.8,50.8,4.19,6.84,8.5,0
+door_arch_prop,arched door prop,door_arch_prop.stl,396,15.4,37.6,3.5,1.44,1.8,0
+door_rect_prop,rectangular door prop,door_rect_prop.stl,220,15.4,37.6,3.5,1.51,1.9,0
+# kit totals: 6 pieces, 27g solid PLA, 0 magnets

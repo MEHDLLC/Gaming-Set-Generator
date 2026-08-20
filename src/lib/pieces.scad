@@ -919,3 +919,70 @@ module hatch_lid() {
             linear_extrude(height = 0.6 + EPS) ring_2d(scaled(5), 1.6);
     }
 }
+
+// ---------------------------------------------------------------------
+// Gatehouse. gate_wall is a straight wall with an oversized arched
+// gate opening and a pair of beam brackets proud of the interior
+// (-Y) face: open-top U slots flanking the opening, so the loose
+// gate_beam (see gatehouse.scad) drops in behind the doors to bar
+// them. Brackets have no roof in the print orientation (wall lying
+// flat), so they stay support-free.
+GATE_W       = 22;   // scaled opening width
+GATE_H       = 42;   // scaled opening height incl. arch
+GATE_RISE    = 9;
+GATE_BEAM_SQ = 3;    // beam cross-section (scaled); notch adds fit clr
+GATE_BEAM_Z  = 18;   // notch floor height (scaled)
+
+module beam_bracket() {
+    bs = scaled(GATE_BEAM_SQ);
+    difference() {
+        translate([-scaled(2.5), -scaled(4), scaled(GATE_BEAM_Z) - scaled(4)])
+            cube([scaled(5), scaled(4) + EPS, scaled(9)]);
+        // channel runs ALONG the beam (x), opening upward and out
+        // both ends; the 3.3mm slot width is across y
+        translate([-scaled(2.5) - EPS,
+                   -scaled(2) - bs / 2 - fit_clearance(),
+                   scaled(GATE_BEAM_Z)])
+            cube([scaled(5) + 2 * EPS, bs + 2 * fit_clearance(),
+                  scaled(9)]);
+    }
+}
+
+module gate_wall(units = 2) {
+    h   = wall_h();
+    wt  = wall_t();
+    len = grid(units);
+    assert(scaled(GATE_W) + 2 * (WALL_TAB_DEPTH + 2) <= len,
+           "gate opening too wide for this wall length");
+    union() {
+        difference() {
+            union() {
+                translate([0, -wt / 2, 0]) cube([len, wt, h]);
+                if (CONNECTOR == "tab")
+                    translate([len, 0, 0])
+                        tab_male(h, WALL_TAB_NECK, WALL_TAB_HEAD,
+                                 WALL_TAB_DEPTH);
+                if (WALL_FOOT) foot_rail(len);
+                if (WALL_TOP_RAIL) translate([0, 0, h])
+                    mirror([0, 0, 1]) foot_rail(len);
+            }
+            if (CONNECTOR == "tab")
+                tab_female(h, fit_clearance(), WALL_TAB_NECK,
+                           WALL_TAB_HEAD, WALL_TAB_DEPTH);
+            for (z = wall_fastener_heights()) {
+                edge_fastener(z);
+                translate([len, 0, 0]) mirror([1, 0, 0])
+                    edge_fastener(z);
+            }
+            thru_wall(len / 2)
+                profile_arch(scaled(GATE_W), scaled(GATE_H),
+                             scaled(GATE_RISE), -EPS);
+            wall_texture_cuts(len, TEXTURE_SEED);
+            if (PART_ID != "" && WALL_FOOT) rail_id_emboss(len / 4);
+        }
+        for (dx = [-1, 1])
+            translate([len / 2 + dx * (scaled(GATE_W) / 2 + scaled(4)),
+                       -wt / 2, 0])
+                beam_bracket();
+    }
+}

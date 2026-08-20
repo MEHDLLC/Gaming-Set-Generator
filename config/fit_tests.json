@@ -120,5 +120,26 @@
       "CONNECTOR": "tab",
       "TEXTURE_SEED": 42
     }
+  },
+  {
+    "name": "beam_in_brackets",
+    "params": {
+      "TEST": "beam_in_brackets",
+      "CONNECTOR": "tab"
+    }
+  },
+  {
+    "name": "door_prop_in_doorway",
+    "params": {
+      "TEST": "door_prop_in_doorway",
+      "CONNECTOR": "tab"
+    }
+  },
+  {
+    "name": "gate_wall_chain",
+    "params": {
+      "TEST": "gate_wall_chain",
+      "CONNECTOR": "tab"
+    }
   }
 ]

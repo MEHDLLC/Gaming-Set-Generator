@@ -337,6 +337,20 @@ solid OpenSCAD_Model
   endfacet
   facet normal 1 -0 0
     outer loop
+      vertex 25.4 31.9658 12.6
+      vertex 25.4 32.3 6.9
+      vertex 25.4 32.3 12.6
+    endloop
+  endfacet
+  facet normal 1 0 0
+    outer loop
+      vertex 25.4 32.3 6.9
+      vertex 25.4 31.9658 12.6
+      vertex 25.4 31.9658 6.9
+    endloop
+  endfacet
+  facet normal 1 -0 0
+    outer loop
       vertex 25.4 21.569 12.6
       vertex 25.4 31.1658 6.9
       vertex 25.4 31.1658 12.6
@@ -361,20 +375,6 @@ solid OpenSCAD_Model
       vertex 25.4 20.769 6.9
       vertex 25.4 10.3 12.6
       vertex 25.4 10.3 6.9
-    endloop
-  endfacet
-  facet normal 1 -0 0
-    outer loop
-      vertex 25.4 31.9658 12.6
-      vertex 25.4 32.3 6.9
-      vertex 25.4 32.3 12.6
-    endloop
-  endfacet
-  facet normal 1 0 0
-    outer loop
-      vertex 25.4 32.3 6.9
-      vertex 25.4 31.9658 12.6
-      vertex 25.4 31.9658 6.9
     endloop
   endfacet
   facet normal 1 -0 0
@@ -16995,6 +16995,20 @@ solid OpenSCAD_Model
       vertex 12.7 0 1.125
     endloop
   endfacet
+  facet normal -0.44372 0 -0.896166
+    outer loop
+      vertex 13.6626 0 6.08832
+      vertex 14.0159 2.1 5.91339
+      vertex 14.0159 0 5.91339
+    endloop
+  endfacet
+  facet normal -0.44372 0 -0.896166
+    outer loop
+      vertex 14.0159 2.1 5.91339
+      vertex 13.6626 0 6.08832
+      vertex 13.6626 2.1 6.08832
+    endloop
+  endfacet
   facet normal -0.746538 0 0.665343
     outer loop
       vertex 14.4856 0 1.84466
@@ -17658,20 +17672,6 @@ solid OpenSCAD_Model
       vertex 10.217 2.1 4.38233
       vertex 10.3503 0 4.75335
       vertex 10.217 0 4.38233
-    endloop
-  endfacet
-  facet normal -0.44372 0 -0.896166
-    outer loop
-      vertex 13.6626 0 6.08832
-      vertex 14.0159 2.1 5.91339
-      vertex 14.0159 0 5.91339
-    endloop
-  endfacet
-  facet normal -0.44372 0 -0.896166
-    outer loop
-      vertex 14.0159 2.1 5.91339
-      vertex 13.6626 0 6.08832
-      vertex 13.6626 2.1 6.08832
     endloop
   endfacet
   facet normal -0.373773 0 0.92752

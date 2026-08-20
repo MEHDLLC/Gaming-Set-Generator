@@ -179,8 +179,23 @@ def suggest_tags(piece, params):
         tags += ["castle tower", "turret", "multi level"]
     elif "hatch_lid" in scad:
         tags += ["trapdoor", "hatch"]
+    elif "gate_wall" in scad:
+        tags += ["castle gate", "gatehouse", "dungeon wall"]
+    elif "gate_props" in scad:
+        gp = params.get("GATE_PIECE", "")
+        gp_tags = {
+            "gate_doors": ["castle gate", "gate doors"],
+            "gate_beam": ["castle gate", "door bar"],
+            "drawbridge": ["drawbridge", "castle bridge"],
+            "door_arch": ["dungeon door"], "door_rect": ["dungeon door"],
+        }
+        tags += ["gatehouse"] + gp_tags.get(gp, [])
     elif "furniture" in scad:
         furn_tags = {
+            "barrel": ["barrel", "tavern"], "keg": ["keg", "tavern"],
+            "fireplace": ["fireplace", "tavern"],
+            "sarcophagus": ["sarcophagus", "crypt"],
+            "altar": ["altar", "crypt"], "cage": ["hanging cage"],
             "bed": ["miniature bed"], "table": ["miniature table"],
             "bench": ["tavern bench"], "stool": ["tavern stool"],
             "wardrobe": ["wardrobe"], "bookshelf": ["bookshelf"],
@@ -381,7 +396,12 @@ def render_previews(kit, styles, kit_dir, failures):
         "DECOR_STYLE":  styles.get("decor", "sconce"),
         **kit.get("shared", {}),
     }
-    if kit.get("preview_scene") == "furniture":
+    if kit.get("preview_scene") == "gatehouse":
+        views = {
+            "preview_iso": "25,10,20,66,0,215,400",
+            "preview_top": "25,15,0,0,0,0,330",
+        }
+    elif kit.get("preview_scene") == "furniture":
         views = {
             "preview_iso": "63,25,8,62,0,200,270",
             "preview_top": "63,25,0,0,0,0,290",

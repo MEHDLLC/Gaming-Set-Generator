@@ -6,6 +6,7 @@
 include <../src/lib/grid.scad>
 include <../src/lib/connectors.scad>
 include <../src/lib/pieces.scad>
+include <../src/lib/gatehouse.scad>
 
 TEST = "floor_x";
 
@@ -14,7 +15,9 @@ valid = ["floor_x", "floor_y", "wall_wall", "corner_male",
          "corner_female", "wall_on_floor", "wall_on_floor_interior",
          "stairs_on_floor", "column_on_floor", "deck_on_wall",
          "column_to_deck", "curved_pair", "curved_on_tower_floor",
-         "tower_deck_on_curved", "hatch_lid_fit", "ruined_pair"];
+         "tower_deck_on_curved", "hatch_lid_fit", "ruined_pair",
+         "beam_in_brackets", "door_prop_in_doorway",
+         "gate_wall_chain"];
 assert(len([for (v = valid) if (v == TEST) v]) == 1,
        str("unknown TEST: ", TEST));
 
@@ -48,6 +51,18 @@ module piece_a() {
         translate([0, 0, floor_t() + FOOT_GROOVE_D - scaled(2)])
             hatch_lid();
     else if (TEST == "ruined_pair") wall_straight(1, ruin = 0.6);
+    // Beam laid into the gate wall brackets (assembled position).
+    else if (TEST == "beam_in_brackets")
+        translate([grid(1) - (scaled(GATE_W) + 2 * scaled(4)
+                              + scaled(10)) / 2,
+                   -wall_t() / 2 - scaled(2) - scaled(GATE_BEAM_SQ) / 2,
+                   scaled(GATE_BEAM_Z)])
+            gate_beam();
+    // Door prop standing inside the arched doorway.
+    else if (TEST == "door_prop_in_doorway")
+        translate([grid(1) - (scaled(DOOR_W) - 0.6) / 2, 1.3, 0])
+            rotate([90, 0, 0]) door_prop("arch");
+    else if (TEST == "gate_wall_chain") gate_wall(2);
 }
 
 module piece_b() {
@@ -88,6 +103,12 @@ module piece_b() {
     else if (TEST == "hatch_lid_fit") tower_floor(true, true);
     else if (TEST == "ruined_pair")
         translate([grid(1), 0, 0]) wall_straight(1, ruin = 0.6);
+    else if (TEST == "beam_in_brackets" || TEST == "gate_wall_chain") {
+        if (TEST == "beam_in_brackets") gate_wall(2);
+        else translate([grid(2), 0, 0]) wall_straight(1);
+    }
+    else if (TEST == "door_prop_in_doorway")
+        wall_straight(2, "door_arch");
 }
 
 intersection() {
