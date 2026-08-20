@@ -179,6 +179,16 @@ def suggest_tags(piece, params):
         tags += ["castle tower", "turret", "multi level"]
     elif "hatch_lid" in scad:
         tags += ["trapdoor", "hatch"]
+    elif "furniture" in scad:
+        furn_tags = {
+            "bed": ["miniature bed"], "table": ["miniature table"],
+            "bench": ["tavern bench"], "stool": ["tavern stool"],
+            "wardrobe": ["wardrobe"], "bookshelf": ["bookshelf"],
+            "throne": ["throne", "king chair"],
+            "chest": ["treasure chest"], "ladder": ["ladder"],
+        }
+        tags += ["dungeon furniture", "dnd furniture", "tavern"]
+        tags += furn_tags.get(params.get("FURNITURE", ""), [])
     elif "floor_tile" in scad:
         tags += ["dungeon floor tile", "dnd tiles"]
     elif "mosaic" in scad:
@@ -371,7 +381,12 @@ def render_previews(kit, styles, kit_dir, failures):
         "DECOR_STYLE":  styles.get("decor", "sconce"),
         **kit.get("shared", {}),
     }
-    if kit.get("preview_scene") == "tower":
+    if kit.get("preview_scene") == "furniture":
+        views = {
+            "preview_iso": "63,25,8,62,0,200,270",
+            "preview_top": "63,25,0,0,0,0,290",
+        }
+    elif kit.get("preview_scene") == "tower":
         views = {
             "preview_iso": "0,0,60,62,0,155,380",
             "preview_top": "0,0,0,0,0,0,260",

@@ -32,6 +32,7 @@ and shipped as a matching `.stl` + `.txt` description pair.
 | `curved_wall` | arc segment (`SEG_DEGREES`, default 90 — four close a ring) at `TOWER_R_UNITS` centerline radius; same end dovetails, curved foot/top rails, curved masonry, openings, optional battlements |
 | `tower_floor` | round plate with ring channels for curved wall rails; deck variant grooved both faces; optional 1x1-cell hatch |
 | `hatch_lid` | drop-in lid with lip and ring pull for any 1x1-cell opening |
+| `furniture` | scatter set via `FURNITURE`: bed, table, bench, stool, wardrobe, bookshelf (seeded book rows), throne, chest, ladder — each designed for one support-free print orientation |
 
 Wall openings (`OPENING` parameter): `door_arch`, `door_rect`,
 `door_portcullis` (2-unit walls), `window_slit` (splayed embrasure),
@@ -82,8 +83,9 @@ pinned explicitly in `styles`. Each kit renders to
 
 Current kits: `stonebound_keep` (tab & slot, seed 42),
 `stonebound_turret` (matching turret expansion — same seed and
-connectors, so it mixes with the Keep), `lodestone_vault` (5x2mm
-magnets, seed 7), plus the `calibration` coupon set.
+connectors, so it mixes with the Keep), `keep_furnishings` (scatter
+furniture, no connectors), `lodestone_vault` (5x2mm magnets, seed 7),
+plus the `calibration` coupon set.
 
 Every piece ships with three files: `<name>.stl`, `<name>.txt`
 (the four-section listing description), and `<name>.tags.txt` (a

@@ -5,6 +5,7 @@
 include <../src/lib/grid.scad>
 include <../src/lib/connectors.scad>
 include <../src/lib/pieces.scad>
+include <../src/lib/furniture.scad>
 
 DOOR_STYLE   = "door_arch";
 WINDOW_STYLE = "window_arch";
@@ -32,6 +33,28 @@ module tower_scene() {
             rotate([0, 0, 180]) curved_wall(90, WINDOW_STYLE, true);
             rotate([0, 0, 270]) curved_wall(90, "none", true);
         }
+}
+
+// Furnished hall: furniture lineup on a textured floor field, fronts
+// toward the camera side (-Y).
+module furniture_scene() {
+    color("BurlyWood") for (i = [0 : 4], j = [0 : 1])
+        translate([grid(i), grid(j), 0]) floor_tile(1, 1);
+    ft2 = floor_t();
+    translate([0, 0, ft2]) {
+        color("Tan") {
+            translate([4, 12, 0]) f_bed();
+            translate([24, 36, 0]) rotate([0, 0, 180])
+                translate([-scaled(22), 0, 0]) f_wardrobe();
+            translate([50, 28, 0]) f_bookshelf();
+            translate([74, 26, 0]) f_throne();
+            translate([90, 8, 0]) f_table();
+            translate([92, 26, 0]) f_bench();
+            translate([118, 12, 0]) f_stool();
+            translate([108, 30, 0]) f_chest();
+            translate([112, 38, 0]) rotate([0, 0, -75]) f_ladder(40);
+        }
+    }
 }
 
 module room_scene() {
@@ -68,4 +91,5 @@ color("RosyBrown") translate([0, 0, ft + wall_h()]) deck_tile(2, 2);
 }
 
 if (SCENE == "tower") tower_scene();
+else if (SCENE == "furniture") furniture_scene();
 else room_scene();

@@ -1,0 +1,111 @@
+{
+  "kit_id": "keep_furnishings",
+  "kit_name": "Keep Furnishings",
+  "seed": 42,
+  "shared": {
+    "CONNECTOR": "none"
+  },
+  "preview": true,
+  "preview_scene": "furniture",
+  "pieces": [
+    {
+      "name": "bed",
+      "scad": "src/pieces/furniture.scad",
+      "params": {
+        "FURNITURE": "bed"
+      },
+      "piece_type": "bed",
+      "style": "solid base, headboard, wedge pillow, blanket seam (print upright)",
+      "extra": "16x32mm footprint",
+      "connector_type": "no"
+    },
+    {
+      "name": "table",
+      "scad": "src/pieces/furniture.scad",
+      "params": {
+        "FURNITURE": "table"
+      },
+      "piece_type": "dining table",
+      "style": "planked top with apron (print upside-down)",
+      "extra": "24x14mm, 15mm tall",
+      "connector_type": "no"
+    },
+    {
+      "name": "bench",
+      "scad": "src/pieces/furniture.scad",
+      "params": {
+        "FURNITURE": "bench"
+      },
+      "piece_type": "bench",
+      "style": "planked seat on trestle ends (print upside-down)",
+      "extra": "20mm long",
+      "connector_type": "no"
+    },
+    {
+      "name": "stool",
+      "scad": "src/pieces/furniture.scad",
+      "params": {
+        "FURNITURE": "stool"
+      },
+      "piece_type": "stool",
+      "style": "round top (print upside-down)",
+      "extra": "7mm seat",
+      "connector_type": "no"
+    },
+    {
+      "name": "wardrobe",
+      "scad": "src/pieces/furniture.scad",
+      "params": {
+        "FURNITURE": "wardrobe"
+      },
+      "piece_type": "wardrobe",
+      "style": "double etched doors, ball handles, 45-degree crown (print upright)",
+      "extra": "36mm tall",
+      "connector_type": "no"
+    },
+    {
+      "name": "bookshelf",
+      "scad": "src/pieces/furniture.scad",
+      "params": {
+        "FURNITURE": "bookshelf"
+      },
+      "piece_type": "bookshelf",
+      "style": "seeded rows of books on three shelves (print on its back)",
+      "extra": "30mm tall",
+      "connector_type": "no"
+    },
+    {
+      "name": "throne",
+      "scad": "src/pieces/furniture.scad",
+      "params": {
+        "FURNITURE": "throne"
+      },
+      "piece_type": "throne / king's chair",
+      "style": "tall back, finials, etched diamond, solid plinth (print upright)",
+      "extra": "28mm back",
+      "connector_type": "no"
+    },
+    {
+      "name": "chest",
+      "scad": "src/pieces/furniture.scad",
+      "params": {
+        "FURNITURE": "chest"
+      },
+      "piece_type": "treasure chest",
+      "style": "barrel lid, seam, hasp (print upright)",
+      "extra": "12x8mm",
+      "connector_type": "no"
+    },
+    {
+      "name": "ladder",
+      "scad": "src/pieces/furniture.scad",
+      "params": {
+        "FURNITURE": "ladder"
+      },
+      "piece_type": "ladder",
+      "style": "flat frame, reaches a deck resting on standard walls (print flat)",
+      "extra": "58mm long",
+      "connector_type": "no"
+    }
+  ]
+}

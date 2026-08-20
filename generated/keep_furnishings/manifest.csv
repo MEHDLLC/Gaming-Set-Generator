@@ -1,0 +1,11 @@
+name,piece_type,file,triangles,bbox_x_mm,bbox_y_mm,bbox_z_mm,solid_volume_cm3,solid_pla_g,magnets_needed
+bed,bed,bed.stl,60,16.0,32.0,16.0,3.62,4.5,0
+table,dining table,table.stl,156,24.0,14.0,15.0,1.6,2.0,0
+bench,bench,bench.stl,108,20.0,5.0,10.0,0.31,0.4,0
+stool,stool,stool.stl,312,6.99,7.0,8.0,0.14,0.2,0
+wardrobe,wardrobe,wardrobe.stl,404,24.0,13.0,36.0,8.54,10.6,0
+bookshelf,bookshelf,bookshelf.stl,452,20.0,8.0,30.0,3.42,4.2,0
+throne,throne / king's chair,throne.stl,76,11.0,10.0,30.5,1.68,2.1,0
+chest,treasure chest,chest.stl,212,12.0,8.3,10.0,0.87,1.1,0
+ladder,ladder,ladder.stl,204,9.0,58.0,2.0,0.66,0.8,0
+# kit totals: 9 pieces, 26g solid PLA, 0 magnets
