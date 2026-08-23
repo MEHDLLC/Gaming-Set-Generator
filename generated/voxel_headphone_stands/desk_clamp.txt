@@ -1,0 +1,13 @@
+1. Design Concept:
+This desk clamp features a C-clamp with a dovetail rail — any stand in this set slides straight down onto it, generated using a fits desks up to 40mm thick configuration.
+Part of the Voxel Headphone Stands collection. Original blocky voxel art — an independent design, not affiliated with or endorsed by any game.
+
+2. Use Suggestion:
+Hooks over a desk edge and tightens with the printed thumbscrew, then the stand slides down onto the dovetail rail. The stands also work free-standing without it.
+
+3. Print Recommendations:
+Print with the C-opening facing up (spine flat on the bed) so both jaws rise vertically. Recommended layer height: 0.2mm | Infill: 15-20% | No supports required |
+PLA prints fine; PETG or ABS is tougher for the clamp and thumbscrew.
+
+4. Thanks for looking! I can generate similar items using a program I built. Hit me up if you'd
+like something custom! Thanks for liking and following my page!

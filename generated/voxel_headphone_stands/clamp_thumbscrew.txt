@@ -1,0 +1,13 @@
+1. Design Concept:
+This clamp thumbscrew features a knurled knob with a printed 6mm-pitch thread, generated using a 55mm thread, no hardware needed configuration.
+Part of the Voxel Headphone Stands collection. Original blocky voxel art — an independent design, not affiliated with or endorsed by any game.
+
+2. Use Suggestion:
+Threads into the desk clamp to grip the table. No nuts or bolts required.
+
+3. Print Recommendations:
+Print knob-down on the bed, threads pointing up. Recommended layer height: 0.2mm | Infill: 15-20% | No supports required |
+PLA prints fine; PETG or ABS is tougher for the clamp and thumbscrew.
+
+4. Thanks for looking! I can generate similar items using a program I built. Hit me up if you'd
+like something custom! Thanks for liking and following my page!

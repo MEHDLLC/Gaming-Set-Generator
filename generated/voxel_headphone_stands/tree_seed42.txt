@@ -1,0 +1,13 @@
+1. Design Concept:
+This blocky tree headphone stand features a full voxel relief canopy overhanging a slim trunk — every block steps in or out so the scene reads as a 3D block sculpture from the front and the back, with a smooth rounded core hidden between the two faces, generated using a seed 42, 96 x 58 x 209mm, 44mm trunk configuration.
+Part of the Voxel Headphone Stands collection. Original blocky voxel art — an independent design, not affiliated with or endorsed by any game.
+
+2. Use Suggestion:
+Sits on a desk or clamps to the edge with the matching clamp. The headband drops into the channel and rests on the smooth crest, so the ear cups hang clear either side of the trunk and the blocky scene stays unbroken front and back. Each seed grows a different canopy.
+
+3. Print Recommendations:
+Print lying on the back face — every overhang in the silhouette becomes flat geometry that way. Recommended layer height: 0.2mm | Infill: 15-20% | No supports required |
+PLA prints fine; PETG or ABS is tougher for the clamp and thumbscrew.
+
+4. Thanks for looking! I can generate similar items using a program I built. Hit me up if you'd
+like something custom! Thanks for liking and following my page!

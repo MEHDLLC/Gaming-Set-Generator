@@ -7,6 +7,8 @@ include <../src/lib/connectors.scad>
 include <../src/lib/pieces.scad>
 include <../src/lib/furniture.scad>
 include <../src/lib/gatehouse.scad>
+include <../src/lib/headphone.scad>
+include <../src/lib/sculpture.scad>
 
 DOOR_STYLE   = "door_arch";
 WINDOW_STYLE = "window_arch";
@@ -96,6 +98,34 @@ module gate_doors_closed() {
         profile_arch(w, h, scaled(GATE_RISE));
 }
 
+// Voxel stands on a desk: the tree mounted on the edge clamp, the
+// sheep and chicken standing free beside it.
+module headphones_scene() {
+    color("Tan") translate([-60, 0, -22])
+        cube([420, 190, 22]);
+    color("DimGray") translate([(hp_w() - CLAMP_W) / 2, 0, 0])
+        desk_clamp();
+    color("DimGray")
+        translate([(hp_w() - CLAMP_W) / 2 + CLAMP_W / 2, 22,
+                   clamp_thread_z() - 8]) clamp_screw();
+    color("OliveDrab") translate([0, 8, CLAMP_PLATE]) hp_tree(42);
+    color("Gainsboro") translate([125, 8, 0]) hp_sheep();
+    color("Khaki") translate([250, 8, 0]) hp_chicken();
+}
+
+// Assembled stand, and beside it the box open with its lid lifted
+// off, showing that the whole sculpture is the handle.
+module sculpture_scene() {
+    color("Gainsboro") storage_box();
+    color("DarkSlateGray") translate([0, 0, BOX_H - LID_T])
+        sculpture_lid();
+    translate([150, 0, 0]) {
+        color("Gainsboro") storage_box();
+        color("DarkSlateGray") translate([0, 0, BOX_H + 34])
+            sculpture_lid();
+    }
+}
+
 module room_scene() {
 
 color("BurlyWood") {
@@ -129,7 +159,9 @@ color("Peru") translate([grid(2), grid(2), ft]) column();
 color("RosyBrown") translate([0, 0, ft + wall_h()]) deck_tile(2, 2);
 }
 
-if (SCENE == "tower") tower_scene();
+if (SCENE == "sculpture") sculpture_scene();
+else if (SCENE == "headphones") headphones_scene();
+else if (SCENE == "tower") tower_scene();
 else if (SCENE == "gatehouse") gatehouse_scene();
 else if (SCENE == "furniture") furniture_scene();
 else room_scene();

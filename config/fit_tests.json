@@ -141,5 +141,33 @@
       "TEST": "gate_wall_chain",
       "CONNECTOR": "tab"
     }
+  },
+  {
+    "name": "hp_clamp_mount",
+    "params": {
+      "TEST": "hp_clamp_mount",
+      "CONNECTOR": "tab"
+    }
+  },
+  {
+    "name": "hp_screw_thread",
+    "params": {
+      "TEST": "hp_screw_thread",
+      "CONNECTOR": "tab"
+    }
+  },
+  {
+    "name": "hp_band_channel",
+    "params": {
+      "TEST": "hp_band_channel",
+      "CONNECTOR": "tab"
+    }
+  },
+  {
+    "name": "lid_in_box",
+    "params": {
+      "TEST": "lid_in_box",
+      "CONNECTOR": "tab"
+    }
   }
 ]

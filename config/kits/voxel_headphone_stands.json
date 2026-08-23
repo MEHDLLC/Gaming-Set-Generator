@@ -1,0 +1,109 @@
+{
+  "kit_id": "voxel_headphone_stands",
+  "kit_name": "Voxel Headphone Stands",
+  "template": "desk",
+  "shared": {
+    "CONNECTOR": "tab",
+    "FIT": "normal"
+  },
+  "preview": true,
+  "preview_scene": "headphones",
+  "pieces": [
+    {
+      "name": "tree_seed42",
+      "scad": "src/pieces/headphone_stand.scad",
+      "params": {
+        "HP_PIECE": "tree",
+        "STAND_SEED": 42
+      },
+      "piece_type": "blocky tree headphone stand",
+      "style": "full voxel relief canopy overhanging a slim trunk \u2014 every block steps in or out so the scene reads as a 3D block sculpture from the front and the back, with a smooth rounded core hidden between the two faces",
+      "param_summary": "seed 42, 96 x 58 x 209mm, 44mm trunk",
+      "use_suggestion": "Sits on a desk or clamps to the edge with the matching clamp. The headband drops into the channel and rests on the smooth crest, so the ear cups hang clear either side of the trunk and the blocky scene stays unbroken front and back. Each seed grows a different canopy.",
+      "print_note": "Print lying on the back face \u2014 every overhang in the silhouette becomes flat geometry that way.",
+      "connector_type": "clamp dovetail"
+    },
+    {
+      "name": "tree_seed7",
+      "scad": "src/pieces/headphone_stand.scad",
+      "params": {
+        "HP_PIECE": "tree",
+        "STAND_SEED": 7
+      },
+      "piece_type": "blocky tree headphone stand",
+      "style": "full voxel relief canopy overhanging a slim trunk \u2014 every block steps in or out so the scene reads as a 3D block sculpture from the front and the back, with a smooth rounded core hidden between the two faces",
+      "param_summary": "seed 7, 96 x 58 x 209mm, 44mm trunk",
+      "use_suggestion": "Sits on a desk or clamps to the edge with the matching clamp. The headband drops into the channel and rests on the smooth crest, so the ear cups hang clear either side of the trunk and the blocky scene stays unbroken front and back. Each seed grows a different canopy.",
+      "print_note": "Print lying on the back face \u2014 every overhang in the silhouette becomes flat geometry that way.",
+      "connector_type": "clamp dovetail"
+    },
+    {
+      "name": "tree_seed19",
+      "scad": "src/pieces/headphone_stand.scad",
+      "params": {
+        "HP_PIECE": "tree",
+        "STAND_SEED": 19
+      },
+      "piece_type": "blocky tree headphone stand",
+      "style": "full voxel relief canopy overhanging a slim trunk \u2014 every block steps in or out so the scene reads as a 3D block sculpture from the front and the back, with a smooth rounded core hidden between the two faces",
+      "param_summary": "seed 19, 96 x 58 x 209mm, 44mm trunk",
+      "use_suggestion": "Sits on a desk or clamps to the edge with the matching clamp. The headband drops into the channel and rests on the smooth crest, so the ear cups hang clear either side of the trunk and the blocky scene stays unbroken front and back. Each seed grows a different canopy.",
+      "print_note": "Print lying on the back face \u2014 every overhang in the silhouette becomes flat geometry that way.",
+      "connector_type": "clamp dovetail"
+    },
+    {
+      "name": "sheep",
+      "scad": "src/pieces/headphone_stand.scad",
+      "params": {
+        "HP_PIECE": "sheep"
+      },
+      "piece_type": "blocky sheep headphone stand",
+      "style": "voxel sheep head in full block relief over a woolly neck, smooth rounded core hidden between the front and back faces",
+      "param_summary": "96 x 58 x 209mm, 44mm neck",
+      "use_suggestion": "The headband drops into the channel behind the sheep's head and rests on the smooth crest, with the ear cups hanging either side of the neck.",
+      "print_note": "Print lying on the back face \u2014 every overhang in the silhouette becomes flat geometry that way.",
+      "connector_type": "clamp dovetail"
+    },
+    {
+      "name": "chicken",
+      "scad": "src/pieces/headphone_stand.scad",
+      "params": {
+        "HP_PIECE": "chicken"
+      },
+      "piece_type": "blocky chicken headphone stand",
+      "style": "voxel chicken in full block relief \u2014 broad body over narrow legs, smooth rounded core hidden between the front and back faces",
+      "param_summary": "96 x 58 x 209mm, 44mm legs",
+      "use_suggestion": "The headband drops into the channel behind the chicken and rests on the smooth crest, with the ear cups hanging either side of the legs.",
+      "print_note": "Print lying on the back face \u2014 every overhang in the silhouette becomes flat geometry that way.",
+      "connector_type": "clamp dovetail"
+    },
+    {
+      "name": "desk_clamp",
+      "scad": "src/pieces/headphone_stand.scad",
+      "params": {
+        "HP_PIECE": "clamp"
+      },
+      "piece_type": "desk clamp",
+      "style": "C-clamp with a dovetail rail \u2014 any stand in this set slides straight down onto it",
+      "param_summary": "fits desks up to 40mm thick",
+      "use_suggestion": "Hooks over a desk edge and tightens with the printed thumbscrew, then the stand slides down onto the dovetail rail. The stands also work free-standing without it.",
+      "print_note": "Print with the C-opening facing up (spine flat on the bed) so both jaws rise vertically.",
+      "connector_type": "dovetail"
+    },
+    {
+      "name": "clamp_thumbscrew",
+      "scad": "src/pieces/headphone_stand.scad",
+      "params": {
+        "HP_PIECE": "screw"
+      },
+      "piece_type": "clamp thumbscrew",
+      "style": "knurled knob with a printed 6mm-pitch thread",
+      "param_summary": "55mm thread, no hardware needed",
+      "use_suggestion": "Threads into the desk clamp to grip the table. No nuts or bolts required.",
+      "print_note": "Print knob-down on the bed, threads pointing up.",
+      "connector_type": "printed thread"
+    }
+  ],
+  "collection_note": " Original blocky voxel art \u2014 an independent design, not affiliated with or endorsed by any game.",
+  "material_note": "PLA prints fine; PETG or ABS is tougher for the clamp and thumbscrew."
+}

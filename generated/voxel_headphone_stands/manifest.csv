@@ -1,0 +1,9 @@
+name,piece_type,file,triangles,bbox_x_mm,bbox_y_mm,bbox_z_mm,solid_volume_cm3,solid_pla_g,magnets_needed
+tree_seed42,blocky tree headphone stand,tree_seed42.stl,8852,96.0,58.2,209.01,492.49,610.7,0
+tree_seed7,blocky tree headphone stand,tree_seed7.stl,8964,96.0,58.2,209.01,487.38,604.4,0
+tree_seed19,blocky tree headphone stand,tree_seed19.stl,8916,96.0,58.2,209.01,495.76,614.7,0
+sheep,blocky sheep headphone stand,sheep.stl,8724,96.0,58.2,209.01,482.01,597.7,0
+chicken,blocky chicken headphone stand,chicken.stl,8916,96.0,58.2,209.01,473.53,587.2,0
+desk_clamp,desk clamp,desk_clamp.stl,11594,48.0,78.0,94.0,86.85,107.7,0
+clamp_thumbscrew,clamp thumbscrew,clamp_thumbscrew.stl,30282,25.45,25.44,65.46,7.62,9.4,0
+# kit totals: 7 pieces, 3132g solid PLA, 0 magnets

@@ -1,0 +1,13 @@
+1. Design Concept:
+This arch sculpture lid features a minimalist asymmetric arch with a rounded crown and a steep tapered void, printed as one piece with the lid it stands on, generated using a 165mm arch on a 4mm lid, 26mm blade configuration.
+Part of the Arch Sculpture Headphone Stand collection.
+
+2. Use Suggestion:
+Lifts off the box by the sculpture itself. The headband rests across the rounded crown and the ear cups hang clear either side of the slim blade, so the piece reads as a sculpture first and a stand second.
+
+3. Print Recommendations:
+Print lid-down on the bed with the arch rising: the outer surface narrows all the way up and the void walls sit about 76 degrees, so nothing overhangs. Recommended layer height: 0.2mm | Infill: 15-20% | No supports required |
+Prints cleanly in PLA; a matte or silk filament suits the form. Print both parts in the same material for a consistent finish.
+
+4. Thanks for looking! I can generate similar items using a program I built. Hit me up if you'd
+like something custom! Thanks for liking and following my page!

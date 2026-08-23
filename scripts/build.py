@@ -71,6 +71,23 @@ like something custom! Thanks for liking and following my page!
 """
 
 
+DESK_TEMPLATE = """\
+1. Design Concept:
+This {piece_type} features a {style}, generated using a {param_summary} configuration.
+Part of the {kit_name} collection.{collection_note}
+
+2. Use Suggestion:
+{use_suggestion}
+
+3. Print Recommendations:
+{print_note} Recommended layer height: 0.2mm | Infill: 15-20% | No supports required |
+{material_note}
+
+4. Thanks for looking! I can generate similar items using a program I built. Hit me up if you'd
+like something custom! Thanks for liking and following my page!
+"""
+
+
 def scad_value(v):
     """Format a Python value as an OpenSCAD -D literal."""
     if isinstance(v, bool):
@@ -179,6 +196,24 @@ def suggest_tags(piece, params):
         tags += ["castle tower", "turret", "multi level"]
     elif "hatch_lid" in scad:
         tags += ["trapdoor", "hatch"]
+    elif "sculpture_stand" in scad:
+        return ["headphone stand", "desk organizer", "minimalist",
+                "modern sculpture", "cable storage", "desk decor",
+                "headset stand", "storage box", "3d printed",
+                "desk accessory", "gift for him", "office decor"]
+    elif "headphone_stand" in scad:
+        hp = params.get("HP_PIECE", "")
+        if hp in ("clamp", "screw"):
+            tags = ["headphone stand", "desk clamp", "3d printed",
+                    "desk accessory", "headset stand", "replacement part"]
+        else:
+            tags = ["headphone stand", "headset stand", "voxel art",
+                    "blocky", "gamer desk", "desk accessory",
+                    "3d printed", "gift for gamer", "desk decor",
+                    "clamp on stand"]
+            tags += {"tree": ["voxel tree"], "sheep": ["voxel sheep"],
+                     "chicken": ["voxel chicken"]}.get(hp, [])
+        return tags[:13]
     elif "gate_wall" in scad:
         tags += ["castle gate", "gatehouse", "dungeon wall"]
     elif "gate_props" in scad:
@@ -307,7 +342,7 @@ def build_kit(kit, failures):
                                 f"kit-level params {sorted(clash)}")
                 continue
         params = {**shared, **own}
-        if not calibration:
+        if not calibration and kit.get("template") != "desk":
             params["PART_ID"] = f"{kit_code(kit)} {name}"
             params.setdefault("TEXTURE", styles.get("texture", "none"))
             params.setdefault("TEXTURE_SEED", kit.get("seed", 0))
@@ -353,8 +388,22 @@ def build_kit(kit, failures):
                                         connector_text(shared)),
             "param_summary": piece.get("param_summary", summary),
         }
-        (kit_dir / f"{name}.txt").write_text(
-            DESCRIPTION_TEMPLATE.format(**fields))
+        if kit.get("template") == "desk":
+            fields["use_suggestion"] = piece.get(
+                "use_suggestion",
+                "A sturdy desk stand for over-ear headphones or a "
+                "gaming headset.")
+            fields["print_note"] = piece.get("print_note", "")
+            fields["collection_note"] = kit.get("collection_note", "")
+            fields["material_note"] = kit.get(
+                "material_note",
+                "PLA prints fine; PETG or ABS is tougher for parts "
+                "that take load.")
+            (kit_dir / f"{name}.txt").write_text(
+                DESK_TEMPLATE.format(**fields))
+        else:
+            (kit_dir / f"{name}.txt").write_text(
+                DESCRIPTION_TEMPLATE.format(**fields))
         nice = re.sub(r"(\d)X(\d)", r"\1x\2",
                       fields["piece_type"].title())
         title = (f"{nice} - {kit['kit_name']} | "
@@ -396,7 +445,17 @@ def render_previews(kit, styles, kit_dir, failures):
         "DECOR_STYLE":  styles.get("decor", "sconce"),
         **kit.get("shared", {}),
     }
-    if kit.get("preview_scene") == "gatehouse":
+    if kit.get("preview_scene") == "sculpture":
+        views = {
+            "preview_iso": "60,0,105,70,0,28,700",
+            "preview_top": "60,0,105,90,0,0,620",
+        }
+    elif kit.get("preview_scene") == "headphones":
+        views = {
+            "preview_iso": "150,25,95,72,0,22,1060",
+            "preview_top": "150,25,95,90,0,0,1000",
+        }
+    elif kit.get("preview_scene") == "gatehouse":
         views = {
             "preview_iso": "25,10,20,66,0,215,400",
             "preview_top": "25,15,0,0,0,0,330",
@@ -426,6 +485,22 @@ def render_previews(kit, styles, kit_dir, failures):
                             f"failed\n{proc.stderr[-500:]}")
         else:
             print(f"[ok]     {kit['kit_id']}/{name}.png")
+
+
+def run_seed_sweep(failures):
+    """Silhouette rules across many stand seeds — pure functions, so
+    this runs without building geometry."""
+    sweep = ROOT / "tests" / "hp_seed_sweep.scad"
+    if not sweep.exists():
+        return
+    out = OUT / ".fit" / "hp_seed_sweep.echo"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    proc = subprocess.run(["openscad", "-o", str(out), str(sweep)],
+                          capture_output=True, text=True)
+    if proc.returncode != 0:
+        failures.append(f"stand silhouette sweep failed:\n{proc.stderr}")
+    else:
+        print("[sweep]  stand silhouette rules hold across all seeds")
 
 
 def run_fit_tests(failures):
@@ -460,18 +535,25 @@ def run_fit_tests(failures):
 
 def main():
     failures = []
+    only = set(sys.argv[2:]) if len(sys.argv) > 2 and \
+        sys.argv[1] == "--kits" else None
     kit_files = sorted((ROOT / "config" / "kits").glob("*.json"))
+    if only:
+        kit_files = [f for f in kit_files if f.stem in only]
+        print(f"building only: {', '.join(sorted(only))}")
     n_pieces = 0
     for f in kit_files:
         kit = json.loads(f.read_text())
         n_pieces += len(kit["pieces"])
         build_kit(kit, failures)
-    n_tests = run_fit_tests(failures)
+    run_seed_sweep(failures)
+    n_tests = 0 if only else run_fit_tests(failures)
 
     # Every .stl must have a matching .txt and vice versa — the
     # zero-mismatch guarantee for shipped bundles.
     for kit_dir in sorted(d for d in OUT.iterdir()
-                          if d.is_dir() and d.name != ".fit"):
+                          if d.is_dir() and d.name != ".fit"
+                          and (not only or d.name in only)):
         stls = {f.stem for f in kit_dir.glob("*.stl")}
         txts = {f.name[:-4] for f in kit_dir.glob("*.txt")
                 if not f.name.endswith(".tags.txt")}

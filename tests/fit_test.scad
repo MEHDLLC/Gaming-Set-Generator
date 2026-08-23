@@ -7,6 +7,8 @@ include <../src/lib/grid.scad>
 include <../src/lib/connectors.scad>
 include <../src/lib/pieces.scad>
 include <../src/lib/gatehouse.scad>
+include <../src/lib/headphone.scad>
+include <../src/lib/sculpture.scad>
 
 TEST = "floor_x";
 
@@ -17,7 +19,8 @@ valid = ["floor_x", "floor_y", "wall_wall", "corner_male",
          "column_to_deck", "curved_pair", "curved_on_tower_floor",
          "tower_deck_on_curved", "hatch_lid_fit", "ruined_pair",
          "beam_in_brackets", "door_prop_in_doorway",
-         "gate_wall_chain"];
+         "gate_wall_chain", "hp_clamp_mount", "hp_screw_thread",
+         "hp_band_channel", "lid_in_box"];
 assert(len([for (v = valid) if (v == TEST) v]) == 1,
        str("unknown TEST: ", TEST));
 
@@ -63,6 +66,23 @@ module piece_a() {
         translate([grid(1) - (scaled(DOOR_W) - 0.6) / 2, 1.3, 0])
             rotate([90, 0, 0]) door_prop("arch");
     else if (TEST == "gate_wall_chain") gate_wall(2);
+    // Stand base seated on the clamp plate, dovetail engaged.
+    else if (TEST == "hp_clamp_mount")
+        translate([0, 8, CLAMP_PLATE]) hp_base();
+    // Thumbscrew threaded into the clamp boss (helix phases aligned:
+    // both thread bases sit at the same absolute z).
+    else if (TEST == "hp_screw_thread")
+        translate([(hp_w() - CLAMP_W) / 2 + CLAMP_W / 2, 22,
+                   clamp_thread_z() - 8])
+            clamp_screw();
+    // Headband-sized prism dropped into the channel above the crest.
+    else if (TEST == "hp_band_channel")
+        translate([-30, HP_SLAB + 1, hp_crest() + 0.5])
+            cube([hp_w() + 60, HP_CORE_D - 2,
+                  hp_h() - hp_crest() - 2.5]);
+    // Sculpture lid dropped into the box rabbet.
+    else if (TEST == "lid_in_box")
+        translate([0, 0, BOX_H - LID_T]) sculpture_lid();
 }
 
 module piece_b() {
@@ -109,6 +129,12 @@ module piece_b() {
     }
     else if (TEST == "door_prop_in_doorway")
         wall_straight(2, "door_arch");
+    else if (TEST == "hp_clamp_mount")
+        translate([(hp_w() - CLAMP_W) / 2, 0, 0]) desk_clamp();
+    else if (TEST == "hp_screw_thread")
+        translate([(hp_w() - CLAMP_W) / 2, 0, 0]) desk_clamp();
+    else if (TEST == "hp_band_channel") hp_tree(42);
+    else if (TEST == "lid_in_box") storage_box();
 }
 
 intersection() {

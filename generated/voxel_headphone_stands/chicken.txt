@@ -1,0 +1,13 @@
+1. Design Concept:
+This blocky chicken headphone stand features a voxel chicken in full block relief — broad body over narrow legs, smooth rounded core hidden between the front and back faces, generated using a 96 x 58 x 209mm, 44mm legs configuration.
+Part of the Voxel Headphone Stands collection. Original blocky voxel art — an independent design, not affiliated with or endorsed by any game.
+
+2. Use Suggestion:
+The headband drops into the channel behind the chicken and rests on the smooth crest, with the ear cups hanging either side of the legs.
+
+3. Print Recommendations:
+Print lying on the back face — every overhang in the silhouette becomes flat geometry that way. Recommended layer height: 0.2mm | Infill: 15-20% | No supports required |
+PLA prints fine; PETG or ABS is tougher for the clamp and thumbscrew.
+
+4. Thanks for looking! I can generate similar items using a program I built. Hit me up if you'd
+like something custom! Thanks for liking and following my page!

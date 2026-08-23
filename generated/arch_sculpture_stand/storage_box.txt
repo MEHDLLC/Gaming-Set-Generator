@@ -1,0 +1,13 @@
+1. Design Concept:
+This storage box features a soft-cornered open box with an internal rabbet the lid drops into flush, generated using a 95 x 110 x 52mm outside, 2.6mm walls configuration.
+Part of the Arch Sculpture Headphone Stand collection.
+
+2. Use Suggestion:
+Holds cables, adapters, dongles and spare ear pads under the stand. Fill it to add ballast and the stand gets harder to tip.
+
+3. Print Recommendations:
+Print upright as modelled — every wall is vertical and the rabbet faces upward, so no supports. Recommended layer height: 0.2mm | Infill: 15-20% | No supports required |
+Prints cleanly in PLA; a matte or silk filament suits the form. Print both parts in the same material for a consistent finish.
+
+4. Thanks for looking! I can generate similar items using a program I built. Hit me up if you'd
+like something custom! Thanks for liking and following my page!

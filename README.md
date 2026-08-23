@@ -102,6 +102,19 @@ totals — including the magnet shopping list), and every non-coupon
 piece has its part ID embossed into a hidden face (floor undersides,
 wall foot rails) so printed pieces stay identifiable.
 
+## Desk products
+
+The same engine also drives a desk-accessory line, described with a
+product listing template instead of the terrain one:
+
+| Piece | Notes |
+|---|---|
+| `headphone_stand` | voxel-relief stands (tree / sheep / chicken) — front and back are full 3D block sculpture, with a smooth rounded core hidden between them that the headband rests on; a silhouette rule (trunk narrower than the top, scene under 4in, trunk under 2in) is asserted on every design and swept across 60 seeds |
+| `sculpture_stand` | minimalist arch sculpture printed as one piece with the lid it stands on, over a soft-cornered storage box; the lid drops into an internal rabbet and lifts off by the sculpture |
+
+Every desk piece is designed around a single support-free print
+orientation, stated in its description file.
+
 ## Layout
 
 ```
